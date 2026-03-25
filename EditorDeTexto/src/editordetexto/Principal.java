@@ -6,7 +6,7 @@ package editordetexto;
 
 /**
  *
- * @author diana
+ * @author tres 
  */
 public class Principal extends javax.swing.JFrame {
 
