@@ -1,6 +1,6 @@
 
 package editordetexto;
-
+// Ventana Principal
 /**
  *
  * @author tres 
