@@ -2,6 +2,7 @@
 package componenteconfi;
 
 import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Properties;
@@ -34,12 +35,12 @@ public class Configuracion extends javax.swing.JPanel {
             comboTamano.addItem(String.valueOf(tan));
         }
 
-//selecion predeterminada
+//selección predeterminada
         lstFuente.setSelectedIndex(3);
         lstEstilo.setSelectedIndex(0); 
         comboTamano.setSelectedItem("18"); 
         txtRuta.setText(System.getProperty("user.dir")+"\\"); 
-        radioIngles.setSelected(true); 
+        radioEspanol.setSelected(true); // --Cambio de idioma predeterminado
 
         
         // Evento para cuando cambia el tipo de letra
@@ -68,6 +69,21 @@ public class Configuracion extends javax.swing.JPanel {
         });
 
         actualizarMuestra();
+        
+        // --Cambio de idioma al selecionar radioEspanol
+        radioEspanol.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                IdiomaESP(); // Llama al método que traduce el panel
+            }
+        });
+        
+        // --Cambio de idioma al selecionar radioIngles
+        radioIngles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                IdiomaENG(); // Llama al método que traduce el panel
+            }
+        });
+        
     }
 
     private void actualizarMuestra() {
@@ -215,16 +231,13 @@ public class Configuracion extends javax.swing.JPanel {
                         .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(111, 111, 111)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtFuente, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(20, 20, 20)
-                                .addComponent(comboTamano, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel1)
+                            .addComponent(txtFuente, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(20, 20, 20)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboTamano, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
@@ -285,35 +298,84 @@ public class Configuracion extends javax.swing.JPanel {
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     //Metodo Propiedades Escribir
-    public boolean EscribirPropiedades(Properties propiedades){ 
-      OutputStream configOutput; 
-        try{ 
-            configOutput = new FileOutputStream(System.getProperty("user.dir")+"/config.properties");           
-            propiedades.store(configOutput, "<------ Archivo de Configuraciones ------>"); 
-            configOutput.close(); 
-            return (true);  
-        } catch(Exception e){ 
-          return(false); 
-        } 
+    public java.util.Properties LeerPropiedades() {
+        mis_propiedades.ClassArchivoPropiedades manejador = new mis_propiedades.ClassArchivoPropiedades();
+        return manejador.LeerPropiedades();
     }
 
+    public boolean EscribirPropiedades(java.util.Properties propiedades) {
+        mis_propiedades.ClassArchivoPropiedades manejador = new mis_propiedades.ClassArchivoPropiedades();
+        return manejador.EscribirPropiedades(propiedades);
+    }
+    
+// --Metodo para cambiar el idioma del propio componente Español - Ingles
+    public void IdiomaESP() {
+        jLabel1.setText("Tipo De Letra");
+        jLabel2.setText("Tamaño");
+        jLabel3.setText("Estilo");
+        jLabel4.setText("Ruta de Trabajo");
+        radioEspanol.setText("Español");
+        radioIngles.setText("Inglés");
+        btnBuscar.setText("Buscar");
+        
+        // Cambiar el título de los bordes (como el del panel de idioma y la muestra)
+        ((javax.swing.border.TitledBorder)jPanel1.getBorder()).setTitle("Idioma");
+        jPanel1.repaint();
+        ((javax.swing.border.TitledBorder)lblMuestra.getBorder()).setTitle("Visualización");
+        lblMuestra.repaint();
+    }
+
+    public void IdiomaENG() {
+        jLabel1.setText("Font");
+        jLabel2.setText("Size");
+        jLabel3.setText("Style");
+        jLabel4.setText("Working Path");
+        radioEspanol.setText("Spanish");
+        radioIngles.setText("English");
+        btnBuscar.setText("Browse");
+        
+        // Cambiar el título de los bordes
+        ((javax.swing.border.TitledBorder)jPanel1.getBorder()).setTitle("Language");
+        jPanel1.repaint();
+        ((javax.swing.border.TitledBorder)lblMuestra.getBorder()).setTitle("Preview");
+        lblMuestra.repaint();
+    }
+    
+    // -- Método para obtener la fuente armada desde las listas
+    public java.awt.Font getFuenteSeleccionada() {
+        String nombre = lstFuente.getSelectedValue();
+        int estilo = lstEstilo.getSelectedIndex(); // 0=Normal, 1=Negrita, 2=Cursiva
+        int tamano = Integer.parseInt(comboTamano.getSelectedItem().toString());
+        return new java.awt.Font(nombre, estilo, tamano);
+    }
+
+    // --Método para saber qué idioma está marcado
+    public String getIdiomaSeleccionado() {
+        return radioEspanol.isSelected() ? "ES" : "EN";
+    }
+
+    // --Método para obtener la ruta del cuadro de texto
+    public String getRutaTrabajo() {
+        return txtRuta.getText();
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBuscar;
+    public javax.swing.JButton btnBuscar;
     private javax.swing.ButtonGroup btnGroupIdioma;
-    private javax.swing.JComboBox<String> comboTamano;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JLabel lblMuestra;
-    private javax.swing.JList<String> lstEstilo;
-    private javax.swing.JList<String> lstFuente;
-    private javax.swing.JRadioButton radioEspanol;
-    private javax.swing.JRadioButton radioIngles;
-    private javax.swing.JTextField txtFuente;
-    private javax.swing.JTextField txtRuta;
+    public javax.swing.JComboBox<String> comboTamano;
+    public javax.swing.JLabel jLabel1;
+    public javax.swing.JLabel jLabel2;
+    public javax.swing.JLabel jLabel3;
+    public javax.swing.JLabel jLabel4;
+    public javax.swing.JPanel jPanel1;
+    public javax.swing.JScrollPane jScrollPane1;
+    public javax.swing.JScrollPane jScrollPane2;
+    public javax.swing.JLabel lblMuestra;
+    public javax.swing.JList<String> lstEstilo;
+    public javax.swing.JList<String> lstFuente;
+    public javax.swing.JRadioButton radioEspanol;
+    public javax.swing.JRadioButton radioIngles;
+    public javax.swing.JTextField txtFuente;
+    public javax.swing.JTextField txtRuta;
     // End of variables declaration//GEN-END:variables
 }

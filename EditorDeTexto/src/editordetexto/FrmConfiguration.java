@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package editordetexto;
 
 /**
@@ -15,6 +12,30 @@ public class FrmConfiguration extends javax.swing.JFrame {
      */
     public FrmConfiguration() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        
+        // --Pedimos que el componente lea el archivo usando libreria creada
+        java.util.Properties propiedadess = miComponente.LeerPropiedades();
+        if (propiedadess != null && !propiedadess.isEmpty()) {
+            String fuente = propiedadess.getProperty("Fuente");
+            String estilo = propiedadess.getProperty("Estilo");
+            String tamano = propiedadess.getProperty("Tamano");
+            String idioma = propiedadess.getProperty("Idioma");
+            String ruta = propiedadess.getProperty("RutaTrabajo");
+
+            if (fuente != null) miComponente.lstFuente.setSelectedValue(fuente, true);
+            if (estilo != null) miComponente.lstEstilo.setSelectedIndex(Integer.parseInt(estilo));
+            if (tamano != null) miComponente.comboTamano.setSelectedItem(tamano);
+            if (ruta != null) miComponente.txtRuta.setText(ruta);
+
+            if ("ES".equals(idioma)) {
+                miComponente.radioEspanol.setSelected(true);
+                miComponente.IdiomaESP();
+            } else if ("EN".equals(idioma)) {
+                miComponente.radioIngles.setSelected(true);
+                miComponente.IdiomaENG();
+            }
+        }
     }
 
     /**
@@ -26,26 +47,31 @@ public class FrmConfiguration extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        configuracion2 = new componenteconfi.Configuracion();
+        btnAceptar = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
+        miComponente = new componenteconfi.Configuracion();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(0, 0, 102));
-        jButton1.setText("Aceptar");
-        jButton1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 204, 255)));
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnAceptar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnAceptar.setForeground(new java.awt.Color(0, 0, 102));
+        btnAceptar.setText("Aceptar");
+        btnAceptar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 204, 255)));
+        btnAceptar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnAceptarActionPerformed(evt);
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(0, 0, 102));
-        jButton2.setText("Cancelar");
-        jButton2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 204, 255)));
+        btnCancelar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnCancelar.setForeground(new java.awt.Color(0, 0, 102));
+        btnCancelar.setText("Cancelar");
+        btnCancelar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 204, 255)));
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -53,31 +79,57 @@ public class FrmConfiguration extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(59, 59, 59)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(32, 32, 32))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(configuracion2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(miComponente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(configuracion2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(miComponente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    // --Configuracion de Boton Aceptar
+    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        // 1. Creamos el contenedor de propiedades
+        java.util.Properties propiedades = new java.util.Properties();
+
+        // 2. Llenamos el contenedor con lo que hay en el componente actualmente
+        propiedades.setProperty("Fuente", miComponente.getFuenteSeleccionada().getFamily());
+        propiedades.setProperty("Estilo", String.valueOf(miComponente.getFuenteSeleccionada().getStyle()));
+        propiedades.setProperty("Tamano", String.valueOf(miComponente.getFuenteSeleccionada().getSize()));
+        propiedades.setProperty("Idioma", miComponente.getIdiomaSeleccionado());
+        propiedades.setProperty("RutaTrabajo", miComponente.getRutaTrabajo()); 
+    
+        // 3. Guardamos usando el método de tu componente (que usa tu librería)
+        miComponente.EscribirPropiedades(propiedades);
+
+        // 4. Mostramos el mensaje de éxito según el idioma elegido (Parte 7)
+        if (miComponente.getIdiomaSeleccionado().equals("ES")) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Las configuraciones se aplicarán la próxima vez que inicie la aplicación.");
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "The settings will be applied the next time the application starts.");
+        }
+
+        // 5. Cerramos la ventana
+        this.dispose();
+    }//GEN-LAST:event_btnAceptarActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -115,8 +167,8 @@ public class FrmConfiguration extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private componenteconfi.Configuracion configuracion2;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton btnAceptar;
+    private javax.swing.JButton btnCancelar;
+    private componenteconfi.Configuracion miComponente;
     // End of variables declaration//GEN-END:variables
 }
