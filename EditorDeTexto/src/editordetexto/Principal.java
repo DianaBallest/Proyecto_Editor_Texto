@@ -16,9 +16,61 @@ public class Principal extends javax.swing.JFrame {
 
     public Principal() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        
+        aplicarTraduccion();
     }
     
+    public void aplicarTraduccion() {
+    // 1. Cargamos las listas de palabras
+    cargarIdiomas();
+
+    // 2. Usamos TU librería para leer el archivo config.properties
+    mis_propiedades.ClassArchivoPropiedades manejador = new mis_propiedades.ClassArchivoPropiedades();
+    java.util.Properties propiedades = manejador.LeerPropiedades();
+
+    if (propiedades != null) {
+        // Obtenemos el idioma (EN o ES)
+        String idiomaConfigurado = propiedades.getProperty("Idioma", "ES");
+        java.util.ArrayList<String> opcionesIdioma = idiomas.get(idiomaConfigurado);
+
+        int posicion = -1;
+        javax.swing.JMenu menu;
+        javax.swing.JMenuItem opcionMenu;
+
+        // --- EL CICLO DEL PROFE ---
+        // Recorremos la barra de menú (barraMenu es el nombre de tu JMenuBar)
+        for (int nMenu = 0; nMenu < barraMenu.getComponentCount(); nMenu++) {
+            menu = barraMenu.getMenu(nMenu);
+            
+            if (menu != null) {
+                posicion++;
+                menu.setText(opcionesIdioma.get(posicion));
+
+                // Recorremos los ítems de cada menú
+                for (int menuItem = 0; menuItem < menu.getItemCount(); menuItem++) {
+                    opcionMenu = menu.getItem(menuItem);
+                    
+                    if (opcionMenu != null) { // Si no es una rayita separadora
+                        posicion++;
+                        opcionMenu.setText(opcionesIdioma.get(posicion));
+                    }
+                }
+            }
+        }
+        
+        for (int i = 0; i < toolBar.getComponentCount(); i++) {
+            // Obtenemos el componente (botón, separador, etc.)
+            java.awt.Component comp = toolBar.getComponentAtIndex(i);
+        
+            if (comp instanceof javax.swing.JButton) {
+                posicion++; // Seguimos contando desde donde se quedó el menú
+                ((javax.swing.JButton) comp).setToolTipText(opcionesIdioma.get(posicion));
+            }
+        }
+    }
     
+}
     
     // --Metodo para preparar el HashMap
     private void cargarIdiomas() {
@@ -36,14 +88,23 @@ public class Principal extends javax.swing.JFrame {
         espanol.add("Salir");             
     
         espanol.add("Editar");            // Menú Principal 2
-        espanol.add("Cortar");            
-        espanol.add("Copiar");         
+        espanol.add("Copiar");            
+        espanol.add("Cortar");         
         espanol.add("Pegar");            
     
         espanol.add("Herramientas");      // Menú Principal 3
         espanol.add("Configuración");     
     
         espanol.add("Acerca De");         // Menú Principal 4
+        
+        // --AQUÍ AGREGA LOS TOOLTIPS:
+        espanol.add("Nuevo");        // Icono 1
+        espanol.add("Abrir");        // Icono 2
+        espanol.add("Guardar");      // Icono 3
+        espanol.add("Guardar Todo"); // Icono 4
+        espanol.add("Copiar");       // Icono 5
+        espanol.add("Cortar");       // Icono 6
+        espanol.add("Pegar");        // Icono 7
     
 
         // Lista en Inglés (DEBEN ESTAR EN EL MISMO ORDEN)
@@ -60,14 +121,23 @@ public class Principal extends javax.swing.JFrame {
         ingles.add("Exit");
     
         ingles.add("Edit");
-        ingles.add("Cut");
         ingles.add("Copy");
+        ingles.add("Cut");
         ingles.add("Paste");
     
         ingles.add("Tools");
         ingles.add("Configuration");
     
         ingles.add("About");
+        
+        // --AQUÍ AGREGA LOS TOOLTIPS EN INGLÉS:
+        ingles.add("New");           
+        ingles.add("Open");          
+        ingles.add("Save");          
+        ingles.add("Save All");      
+        ingles.add("Copy");          
+        ingles.add("Cut");           
+        ingles.add("Paste");
 
         idiomas.put("ES", espanol);
         idiomas.put("EN", ingles);
@@ -86,14 +156,12 @@ public class Principal extends javax.swing.JFrame {
         btnHerramientasCortar = new javax.swing.JButton();
         btnHerramientasPegar = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         lblRenglon = new javax.swing.JLabel();
         lblColumna = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jMenuBar1 = new javax.swing.JMenuBar();
+        barraMenu = new javax.swing.JMenuBar();
         mnuBarArchivo = new javax.swing.JMenu();
         mnuNuevo = new javax.swing.JMenuItem();
         mnuAbrir = new javax.swing.JMenuItem();
@@ -117,65 +185,63 @@ public class Principal extends javax.swing.JFrame {
         toolBar.setRollover(true);
 
         btnHerramientasNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/NewDocument.png"))); // NOI18N
-        btnHerramientasNuevo.setToolTipText("New");
+        btnHerramientasNuevo.setToolTipText("Nuevo");
         btnHerramientasNuevo.setFocusable(false);
         btnHerramientasNuevo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasNuevo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(btnHerramientasNuevo);
 
         btnHerramientasAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Open.png"))); // NOI18N
-        btnHerramientasAbrir.setToolTipText("Open");
+        btnHerramientasAbrir.setToolTipText("Abrir");
         btnHerramientasAbrir.setFocusable(false);
         btnHerramientasAbrir.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasAbrir.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(btnHerramientasAbrir);
 
         btnHerramientasGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Save.png"))); // NOI18N
-        btnHerramientasGuardar.setToolTipText("Save");
+        btnHerramientasGuardar.setToolTipText("Guardar");
         btnHerramientasGuardar.setFocusable(false);
         btnHerramientasGuardar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasGuardar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(btnHerramientasGuardar);
 
         btnHerramientasGuardarTodo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/SaveAll.png"))); // NOI18N
-        btnHerramientasGuardarTodo.setToolTipText("Save All");
+        btnHerramientasGuardarTodo.setToolTipText("Guardar Todo");
         btnHerramientasGuardarTodo.setFocusable(false);
         btnHerramientasGuardarTodo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasGuardarTodo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(btnHerramientasGuardarTodo);
 
         btnHerramientasCopiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Copy.png"))); // NOI18N
-        btnHerramientasCopiar.setToolTipText("Copy");
+        btnHerramientasCopiar.setToolTipText("Copiar");
         btnHerramientasCopiar.setFocusable(false);
         btnHerramientasCopiar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasCopiar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(btnHerramientasCopiar);
 
         btnHerramientasCortar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Cut.png"))); // NOI18N
-        btnHerramientasCortar.setToolTipText("Cut");
+        btnHerramientasCortar.setToolTipText("Cortar");
         btnHerramientasCortar.setFocusable(false);
         btnHerramientasCortar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasCortar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(btnHerramientasCortar);
 
         btnHerramientasPegar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Paste.png"))); // NOI18N
-        btnHerramientasPegar.setToolTipText("Paste");
+        btnHerramientasPegar.setToolTipText("Pegar");
         btnHerramientasPegar.setFocusable(false);
         btnHerramientasPegar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasPegar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(btnHerramientasPegar);
 
-        jTabbedPane1.addTab("tab 1", jTabbedPane2);
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addGap(0, 923, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+            .addGap(0, 504, Short.MAX_VALUE)
         );
 
         lblRenglon.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -216,10 +282,10 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jMenuBar1.setBackground(new java.awt.Color(0, 0, 102));
-        jMenuBar1.setForeground(new java.awt.Color(255, 255, 255));
-        jMenuBar1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jMenuBar1.setOpaque(true);
+        barraMenu.setBackground(new java.awt.Color(0, 0, 102));
+        barraMenu.setForeground(new java.awt.Color(255, 255, 255));
+        barraMenu.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        barraMenu.setOpaque(true);
 
         mnuBarArchivo.setText("Archivo");
 
@@ -265,7 +331,7 @@ public class Principal extends javax.swing.JFrame {
         });
         mnuBarArchivo.add(mnuSalir);
 
-        jMenuBar1.add(mnuBarArchivo);
+        barraMenu.add(mnuBarArchivo);
 
         mnuBarEditar.setText("Editar");
 
@@ -284,7 +350,7 @@ public class Principal extends javax.swing.JFrame {
         mnuPegar.setText("Pegar");
         mnuBarEditar.add(mnuPegar);
 
-        jMenuBar1.add(mnuBarEditar);
+        barraMenu.add(mnuBarEditar);
 
         mnuBarHerramientas.setText("Herramientas");
 
@@ -297,12 +363,12 @@ public class Principal extends javax.swing.JFrame {
         });
         mnuBarHerramientas.add(mnuConfiguracion);
 
-        jMenuBar1.add(mnuBarHerramientas);
+        barraMenu.add(mnuBarHerramientas);
 
         mnuBarAcercaDe.setText("Acerca De");
-        jMenuBar1.add(mnuBarAcercaDe);
+        barraMenu.add(mnuBarAcercaDe);
 
-        setJMenuBar(jMenuBar1);
+        setJMenuBar(barraMenu);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -371,6 +437,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuBar barraMenu;
     private javax.swing.JButton btnHerramientasAbrir;
     private javax.swing.JButton btnHerramientasCopiar;
     private javax.swing.JButton btnHerramientasCortar;
@@ -380,12 +447,9 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton btnHerramientasPegar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JLabel lblColumna;
     private javax.swing.JLabel lblRenglon;
     private javax.swing.JMenuItem mnuAbrir;
