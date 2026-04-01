@@ -26,3 +26,4 @@ replay_pid*
 
 # Ignorar configuraciones privadas de NetBeans
 **/nbproject/private/
+/EditorDeTexto/dist/

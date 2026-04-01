@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 /**
  *
- * @author tres 
+ * @author Diana, Valeria, Areli
  */
 public class Principal extends javax.swing.JFrame {
     //Apareceran en order los componenentes traduccidos ya se en ES O EN
@@ -98,13 +98,13 @@ public class Principal extends javax.swing.JFrame {
         espanol.add("Acerca De");         // Menú Principal 4
         
         // --AQUÍ AGREGA LOS TOOLTIPS:
-        espanol.add("Nuevo");        // Icono 1
-        espanol.add("Abrir");        // Icono 2
-        espanol.add("Guardar");      // Icono 3
-        espanol.add("Guardar Todo"); // Icono 4
-        espanol.add("Copiar");       // Icono 5
-        espanol.add("Cortar");       // Icono 6
-        espanol.add("Pegar");        // Icono 7
+        espanol.add("Nuevo");        
+        espanol.add("Abrir");        
+        espanol.add("Guardar");      
+        espanol.add("Guardar Todo"); 
+        espanol.add("Copiar");       
+        espanol.add("Cortar");       
+        espanol.add("Pegar");        
     
 
         // Lista en Inglés (DEBEN ESTAR EN EL MISMO ORDEN)
