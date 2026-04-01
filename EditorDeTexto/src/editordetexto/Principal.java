@@ -30,7 +30,7 @@ public class Principal extends javax.swing.JFrame {
     java.util.Properties propiedades = manejador.LeerPropiedades();
 
     if (propiedades != null) {
-        // Obtenemos el idioma (EN o ES)
+        // Obtenemos el idioma ol(EN o ES)
         String idiomaConfigurado = propiedades.getProperty("Idioma", "ES");
         java.util.ArrayList<String> opcionesIdioma = idiomas.get(idiomaConfigurado);
 
