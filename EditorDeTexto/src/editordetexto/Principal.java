@@ -2,8 +2,16 @@
 package editordetexto;
 // Ventana Principal
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -155,12 +163,12 @@ public class Principal extends javax.swing.JFrame {
         btnHerramientasCopiar = new javax.swing.JButton();
         btnHerramientasCortar = new javax.swing.JButton();
         btnHerramientasPegar = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         lblRenglon = new javax.swing.JLabel();
         lblColumna = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
         barraMenu = new javax.swing.JMenuBar();
         mnuBarArchivo = new javax.swing.JMenu();
         mnuNuevo = new javax.swing.JMenuItem();
@@ -189,6 +197,11 @@ public class Principal extends javax.swing.JFrame {
         btnHerramientasNuevo.setFocusable(false);
         btnHerramientasNuevo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasNuevo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnHerramientasNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHerramientasNuevoActionPerformed(evt);
+            }
+        });
         toolBar.add(btnHerramientasNuevo);
 
         btnHerramientasAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Open.png"))); // NOI18N
@@ -232,17 +245,6 @@ public class Principal extends javax.swing.JFrame {
         btnHerramientasPegar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasPegar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(btnHerramientasPegar);
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 923, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 504, Short.MAX_VALUE)
-        );
 
         lblRenglon.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblRenglon.setText("Renglon: ");
@@ -292,6 +294,11 @@ public class Principal extends javax.swing.JFrame {
         mnuNuevo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         mnuNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/NewDocument.png"))); // NOI18N
         mnuNuevo.setText("Nuevo");
+        mnuNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuNuevoActionPerformed(evt);
+            }
+        });
         mnuBarArchivo.add(mnuNuevo);
 
         mnuAbrir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_DOWN_MASK));
@@ -314,6 +321,11 @@ public class Principal extends javax.swing.JFrame {
 
         mnuCerrarDocumento.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/CloseDocument.png"))); // NOI18N
         mnuCerrarDocumento.setText("Cerrar Documento");
+        mnuCerrarDocumento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuCerrarDocumentoActionPerformed(evt);
+            }
+        });
         mnuBarArchivo.add(mnuCerrarDocumento);
 
         mnuCerrarTodo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/CloseAll.png"))); // NOI18N
@@ -375,18 +387,18 @@ public class Principal extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(toolBar, javax.swing.GroupLayout.DEFAULT_SIZE, 923, Short.MAX_VALUE)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jTabbedPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(toolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 533, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -401,34 +413,87 @@ public class Principal extends javax.swing.JFrame {
         confi.setVisible(true);
     }//GEN-LAST:event_mnuConfiguracionActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
+    private void mnuNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuNuevoActionPerformed
+
+        //al ya instanciar la clase propiedades no es necesario volverlo a hacer; hecho en la linea 32 y 33
+        //simplemente usar propierties directamente
+        JFileChooser selector=new JFileChooser();
+        
+        // Ruta por defecto: Documentos
+        File ruta = new File(System.getProperty("user.home") + "/Documents");
+        selector.setCurrentDirectory(ruta);
+        
+        // Filtro de archivos
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos de texto (*.txt)", "txt");
+        selector.setFileFilter(filtro);
+
+        int seleccion=selector.showSaveDialog(this);
+        
+        if(seleccion==JFileChooser.APPROVE_OPTION){
+            File archivo=selector.getSelectedFile();
+            //asegurar extencion
+            if(!archivo.getName().endsWith(".txt")){
+                archivo=new File(archivo.getAbsolutePath()+".txt");
+            }
+            try{
+                //crear archivo vacio (texto plano)
+                FileWriter editor=new FileWriter(archivo);
+                editor.write("");
+                editor.close();
+                archivo.createNewFile();
+
+                JTextArea area = new JTextArea();
+                JScrollPane scroll = new JScrollPane(area);
+
+                jTabbedPane1.addTab(archivo.getName(), scroll);
+                jTabbedPane1.setSelectedComponent(scroll);
+
+                area.putClientProperty("archivo", archivo);
+                
+                
+            }catch(IOException e){
+                JOptionPane.showMessageDialog(this, "Error al crear archivo");
+            }
+        }
+    }//GEN-LAST:event_mnuNuevoActionPerformed
+
+    private void btnHerramientasNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHerramientasNuevoActionPerformed
+
+    }//GEN-LAST:event_btnHerramientasNuevoActionPerformed
+
+    private void mnuCerrarDocumentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuCerrarDocumentoActionPerformed
+        int indicador = jTabbedPane1.getSelectedIndex();
+        if(indicador==-1) return;
+        JScrollPane scroll= (JScrollPane) jTabbedPane1.getComponentAt(indicador);
+        JTextArea area=(JTextArea) scroll.getViewport().getView();
+        
+        //verificar si existe texto
+        if(!area.getText().isEmpty()){
+            int op=JOptionPane.showConfirmDialog(this, "¿Deseas guardar el documento antes de cerrar?", "Cerrar Docmuneto", JOptionPane.YES_NO_CANCEL_OPTION);
+            if(op==JOptionPane.CANCEL_OPTION) return;
+            
+            if(op==JOptionPane.YES_OPTION){
+                JScrollPane scll=(JScrollPane) jTabbedPane1.getSelectedComponent();
+                JTextArea a=(JTextArea) scll.getViewport().getView();
+                
+                File archivo=(File) a.getClientProperty("archivo");
+                try{
+                    FileWriter esc=new FileWriter(archivo);
+                    esc.write(a.getText());
+                    esc.close();
+                    JOptionPane.showMessageDialog(this, "Archivo Guardado");
+                    
+                }catch(IOException e){
+                    JOptionPane.showMessageDialog(this, "Error al guardar");
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
+        jTabbedPane1.removeTabAt(indicador);
+    }//GEN-LAST:event_mnuCerrarDocumentoActionPerformed
 
-        /* Create and display the form */
+
+    public static void main(String args[]) {
+
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Principal().setVisible(true);
@@ -447,9 +512,9 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton btnHerramientasPegar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lblColumna;
     private javax.swing.JLabel lblRenglon;
     private javax.swing.JMenuItem mnuAbrir;
