@@ -5,6 +5,7 @@ package editordetexto;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.JFileChooser;
@@ -151,6 +152,41 @@ public class Principal extends javax.swing.JFrame {
         idiomas.put("EN", ingles);
     }
 
+    private void guardar() {
+    int index = jTabbedPane1.getSelectedIndex();
+    // Si no hay pestañas
+    if (index == -1) {
+        JOptionPane.showMessageDialog(this, "No hay documento abierto");
+        return;
+    }
+    JScrollPane scroll = (JScrollPane) jTabbedPane1.getComponentAt(index);
+    JTextArea area = (JTextArea) scroll.getViewport().getView();
+
+    File archivo = (File) area.getClientProperty("archivo");
+
+    try {
+        FileWriter  escribir= new FileWriter(archivo);
+        escribir.write(area.getText());
+        escribir.close();
+        // Marcar como NO modificado
+        area.putClientProperty("modificado", false);
+        // Quitar el * del título
+        String titulo = jTabbedPane1.getTitleAt(index);
+        jTabbedPane1.setTitleAt(index, titulo.replace("*", ""));
+        JOptionPane.showMessageDialog(this, "Archivo guardado correctamente");
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Error al guardar archivo");
+    }
+}
+    
+    private void modificaciones(JTextArea area){
+        area.putClientProperty("modificado", true);
+        int indicador=jTabbedPane1.getSelectedIndex();
+        String titulo=jTabbedPane1.getTitleAt(indicador);
+        if(!titulo.endsWith("*")){
+            jTabbedPane1.setTitleAt(indicador, titulo +"*");
+        }
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -304,11 +340,21 @@ public class Principal extends javax.swing.JFrame {
         mnuAbrir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         mnuAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Open.png"))); // NOI18N
         mnuAbrir.setText("Abrir");
+        mnuAbrir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuAbrirActionPerformed(evt);
+            }
+        });
         mnuBarArchivo.add(mnuAbrir);
 
         mnuGuardar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         mnuGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Save.png"))); // NOI18N
         mnuGuardar.setText("Guardar");
+        mnuGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuGuardarActionPerformed(evt);
+            }
+        });
         mnuBarArchivo.add(mnuGuardar);
 
         mnuGuardarComo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/SaveAs.png"))); // NOI18N
@@ -462,17 +508,24 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnHerramientasNuevoActionPerformed
 
     private void mnuCerrarDocumentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuCerrarDocumentoActionPerformed
+       //Aquí necesita cambios para mostrar el msj de guardar al realizar cambios
+        
         int indicador = jTabbedPane1.getSelectedIndex();
         if(indicador==-1) return;
         JScrollPane scroll= (JScrollPane) jTabbedPane1.getComponentAt(indicador);
         JTextArea area=(JTextArea) scroll.getViewport().getView();
         
-        //verificar si existe texto
-        if(!area.getText().isEmpty()){
-            int op=JOptionPane.showConfirmDialog(this, "¿Deseas guardar el documento antes de cerrar?", "Cerrar Docmuneto", JOptionPane.YES_NO_CANCEL_OPTION);
-            if(op==JOptionPane.CANCEL_OPTION) return;
-            
-            if(op==JOptionPane.YES_OPTION){
+        // Obtener estado de modificación (puede ser null)
+        Boolean modificado = (Boolean) area.getClientProperty("modificado");
+
+        // preguntar si realmente fue modificado
+        if (modificado != null && modificado) {
+
+            int op= JOptionPane.showConfirmDialog(
+                this,"¿Deseas guardar los cambios antes de cerrar?","Cerrar documento",JOptionPane.YES_NO_CANCEL_OPTION);
+                if (op== JOptionPane.CANCEL_OPTION) {return; }//Cancelar cierre
+                if(op==JOptionPane.YES_OPTION){
+                    
                 JScrollPane scll=(JScrollPane) jTabbedPane1.getSelectedComponent();
                 JTextArea a=(JTextArea) scll.getViewport().getView();
                 
@@ -490,6 +543,58 @@ public class Principal extends javax.swing.JFrame {
         }
         jTabbedPane1.removeTabAt(indicador);
     }//GEN-LAST:event_mnuCerrarDocumentoActionPerformed
+
+    private void mnuAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuAbrirActionPerformed
+        JFileChooser buscar=new JFileChooser();
+        
+        //ruta de documentos
+        File ruta=new File(System.getProperty("user.home")+"/Documents");
+        buscar.setCurrentDirectory(ruta);
+        
+        //filtro de archivos
+        FileNameExtensionFilter filtro=new FileNameExtensionFilter("Archivos de texto(*.txt)","txt");
+        buscar.setFileFilter(filtro);
+        
+        int seleccion= buscar.showOpenDialog(this);
+        if (seleccion==JFileChooser.APPROVE_OPTION){
+            File archivo = buscar.getSelectedFile();
+            
+            //no abrir el mismo archovo dos veces
+        for(int i=0; i< jTabbedPane1.getTabCount();i++){
+            JScrollPane scl= (JScrollPane) jTabbedPane1.getComponentAt(i);
+            JTextArea a=(JTextArea) scl.getViewport().getView();
+            
+            File abierto=(File) a.getClientProperty("Archivo");
+            if(abierto!=null && abierto.equals(archivo));
+            jTabbedPane1.setSelectedIndex(i);
+            return;
+        }
+            
+            try{
+                //leer contenido
+                String contenido = new String(Files.readAllBytes(archivo.toPath()));
+                
+                //crear nueva área de texto
+                JTextArea area=new JTextArea();
+                area.setText(contenido);
+                JScrollPane scroll = new JScrollPane(area);
+                
+                //agg al tobbedpane con el nombre del archivo
+                jTabbedPane1.addTab(archivo.getName(), scroll);
+                jTabbedPane1.setSelectedComponent(scroll);
+                
+                //guardar referencia del archivo
+                area.putClientProperty("archivo", archivo);
+                
+            }catch(IOException e){
+                JOptionPane.showMessageDialog(this, "Error al abrir archivo");
+            }
+        }
+    }//GEN-LAST:event_mnuAbrirActionPerformed
+
+    private void mnuGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuGuardarActionPerformed
+        guardar();
+    }//GEN-LAST:event_mnuGuardarActionPerformed
 
 
     public static void main(String args[]) {
