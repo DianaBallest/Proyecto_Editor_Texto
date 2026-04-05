@@ -187,6 +187,71 @@ public class Principal extends javax.swing.JFrame {
             jTabbedPane1.setTitleAt(indicador, titulo +"*");
         }
     }
+    private void guardarComo(JTextArea area) {
+
+    JFileChooser fileChooser = new JFileChooser();
+
+    // Ruta por defecto (config o Documents)
+    File ruta = new File(System.getProperty("user.home") + "/Documents");
+    fileChooser.setCurrentDirectory(ruta);
+
+    // Filtro
+    FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos de texto (*.txt)", "txt");
+    fileChooser.setFileFilter(filtro);
+
+    // Verificar si hay cambios sin guardar
+    String original = (String) area.getClientProperty("contenidoOriginal");
+    String actual = area.getText();
+
+    boolean modificado = (original == null || !original.equals(actual));
+
+    if (modificado) {
+        int op = JOptionPane.showConfirmDialog(
+            this,
+            "Hay cambios sin guardar. ¿Deseas continuar?",
+            "Guardar como",
+            JOptionPane.YES_NO_CANCEL_OPTION
+        );
+
+        if (op == JOptionPane.CANCEL_OPTION) return;
+        if (op == JOptionPane.NO_OPTION) return;
+    }
+
+    int seleccion = fileChooser.showSaveDialog(this);
+
+    if (seleccion == JFileChooser.APPROVE_OPTION) {
+
+        File archivo = fileChooser.getSelectedFile();
+
+        // Asegurar extensión
+        if (!archivo.getName().endsWith(".txt")) {
+            archivo = new File(archivo.getAbsolutePath() + ".txt");
+        }
+
+        try {
+            FileWriter writer = new FileWriter(archivo);
+            writer.write(area.getText());
+            writer.close();
+
+            // Guardar referencia del archivo
+            area.putClientProperty("archivo", archivo);
+
+            int index = jTabbedPane1.getSelectedIndex();
+
+            // Cambiar nombre de pestaña
+            jTabbedPane1.setTitleAt(index, archivo.getName());
+
+            // Actualizar contenido original
+            area.putClientProperty("contenidoOriginal", area.getText());
+
+            JOptionPane.showMessageDialog(this, "Archivo guardado correctamente");
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al guardar archivo");
+        }
+    }
+}
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -359,6 +424,11 @@ public class Principal extends javax.swing.JFrame {
 
         mnuGuardarComo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/SaveAs.png"))); // NOI18N
         mnuGuardarComo.setText("Guardar Como");
+        mnuGuardarComo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuGuardarComoActionPerformed(evt);
+            }
+        });
         mnuBarArchivo.add(mnuGuardarComo);
 
         mnuGuardarTodo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/SaveAll.png"))); // NOI18N
@@ -489,6 +559,7 @@ public class Principal extends javax.swing.JFrame {
                 archivo.createNewFile();
 
                 JTextArea area = new JTextArea();
+                area.putClientProperty("modificado", false);
                 JScrollPane scroll = new JScrollPane(area);
 
                 jTabbedPane1.addTab(archivo.getName(), scroll);
@@ -525,16 +596,17 @@ public class Principal extends javax.swing.JFrame {
                 this,"¿Deseas guardar los cambios antes de cerrar?","Cerrar documento",JOptionPane.YES_NO_CANCEL_OPTION);
                 if (op== JOptionPane.CANCEL_OPTION) {return; }//Cancelar cierre
                 if(op==JOptionPane.YES_OPTION){
-                    
-                JScrollPane scll=(JScrollPane) jTabbedPane1.getSelectedComponent();
-                JTextArea a=(JTextArea) scll.getViewport().getView();
+                    area.putClientProperty("modificado", false);
+                    JScrollPane scll=(JScrollPane) jTabbedPane1.getSelectedComponent();
+                    JTextArea a=(JTextArea) scll.getViewport().getView();
                 
-                File archivo=(File) a.getClientProperty("archivo");
-                try{
-                    FileWriter esc=new FileWriter(archivo);
-                    esc.write(a.getText());
-                    esc.close();
-                    JOptionPane.showMessageDialog(this, "Archivo Guardado");
+                    File archivo=(File) a.getClientProperty("archivo");
+                    try{
+                    
+                        FileWriter esc=new FileWriter(archivo);
+                        esc.write(a.getText());
+                        esc.close();
+                        JOptionPane.showMessageDialog(this, "Archivo Guardado");
                     
                 }catch(IOException e){
                     JOptionPane.showMessageDialog(this, "Error al guardar");
@@ -577,6 +649,7 @@ public class Principal extends javax.swing.JFrame {
                 //crear nueva área de texto
                 JTextArea area=new JTextArea();
                 area.setText(contenido);
+                area.putClientProperty("modificado", false);
                 JScrollPane scroll = new JScrollPane(area);
                 
                 //agg al tobbedpane con el nombre del archivo
@@ -595,6 +668,15 @@ public class Principal extends javax.swing.JFrame {
     private void mnuGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuGuardarActionPerformed
         guardar();
     }//GEN-LAST:event_mnuGuardarActionPerformed
+
+    private void mnuGuardarComoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuGuardarComoActionPerformed
+        int index = jTabbedPane1.getSelectedIndex();
+    if (index == -1) return;
+
+    JScrollPane scroll = (JScrollPane) jTabbedPane1.getComponentAt(index);
+    JTextArea area = (JTextArea) scroll.getViewport().getView();
+        guardarComo(area);
+    }//GEN-LAST:event_mnuGuardarComoActionPerformed
 
 
     public static void main(String args[]) {
