@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import static java.net.URL.of;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -50,6 +51,7 @@ public class Principal extends javax.swing.JFrame {
     }
 }
     
+
     private void modificaciones(JTextArea area){
         area.putClientProperty("modificado", true);
         int indicador=jTabbedPane1.getSelectedIndex();
@@ -57,6 +59,77 @@ public class Principal extends javax.swing.JFrame {
         if(!titulo.endsWith("*")){
             jTabbedPane1.setTitleAt(indicador, titulo +"*");
         }
+    // --Metodo para preparar el HashMap
+    
+    private void cargarIdiomas() {
+        //Lista en Inglés (DEBEN ESTAR EN EL MISMO ORDEN)
+        //Creacion de arraylist para los idiomas
+        ArrayList espanol = new ArrayList();//Traducido a Español
+        espanol.add("Archivo");           // Menú Principal 1
+        espanol.add("Nuevo");             
+        espanol.add("Abrir");             
+        espanol.add("Guardar");           
+        espanol.add("Guardar Como");     
+        espanol.add("Guardar Todo");      
+        espanol.add("Cerrar Documento");  
+        espanol.add("Cerrar Todo");       
+        espanol.add("Salir");             
+    
+        espanol.add("Editar");            // Menú Principal 2
+        espanol.add("Copiar");            
+        espanol.add("Cortar");         
+        espanol.add("Pegar");            
+    
+        espanol.add("Herramientas");      // Menú Principal 3
+        espanol.add("Configuración");     
+    
+        espanol.add("Acerca De");         // Menú Principal 4
+        
+        // --AQUÍ AGREGA LOS TOOLTIPS:
+        espanol.add("Nuevo");        // Icono 1
+        espanol.add("Abrir");        // Icono 2
+        espanol.add("Guardar");      // Icono 3
+        espanol.add("Guardar Todo"); // Icono 4
+        espanol.add("Copiar");       // Icono 5
+        espanol.add("Cortar");       // Icono 6
+        espanol.add("Pegar");        // Icono 7
+    
+
+        // Lista en Inglés (DEBEN ESTAR EN EL MISMO ORDEN)
+        //Creacion de arraylist para los idiomas
+        ArrayList ingles = new ArrayList();//Traducido a Ingles
+        ingles.add("File");
+        ingles.add("New Document");
+        ingles.add("Open");
+        ingles.add("Save");
+        ingles.add("Save As");
+        ingles.add("Save All");
+        ingles.add("Close Document");
+        ingles.add("Close All");
+        ingles.add("Exit");
+    
+        ingles.add("Edit");
+        ingles.add("Copy");
+        ingles.add("Cut");
+        ingles.add("Paste");
+    
+        ingles.add("Tools");
+        ingles.add("Configuration");
+    
+        ingles.add("About");
+        
+        // --AQUÍ AGREGA LOS TOOLTIPS EN INGLÉS:
+        ingles.add("New");           
+        ingles.add("Open");          
+        ingles.add("Save");          
+        ingles.add("Save All");      
+        ingles.add("Copy");          
+        ingles.add("Cut");           
+        ingles.add("Paste");
+
+        idiomas.put("ES", espanol);
+        idiomas.put("EN", ingles);
+
     }
 
     @SuppressWarnings("unchecked")
