@@ -2,6 +2,10 @@
 package editordetexto;
 // Ventana Principal
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,9 +13,13 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -172,6 +180,7 @@ public class Principal extends javax.swing.JFrame {
                 archivo.createNewFile();
 
                 JTextArea area=new JTextArea();
+                configurarArea(area);
                 JScrollPane scroll=new JScrollPane(area);
 
                 panelNuevo.addTab(archivo.getName(), scroll);
@@ -258,6 +267,7 @@ public class Principal extends javax.swing.JFrame {
 
             JTextArea area = new JTextArea();
             area.setText(contenido);
+            configurarArea(area);
 
             JScrollPane desliz = new JScrollPane(area);
 
@@ -355,6 +365,95 @@ public class Principal extends javax.swing.JFrame {
     }
 }
     
+    private JTextArea obtenerAreaActual(){
+        int i =panelNuevo.getSelectedIndex();
+        if(i==-1)
+            return null;
+        JScrollPane scroll=(JScrollPane)panelNuevo.getComponentAt(i);
+        return (JTextArea)scroll.getViewport().getView();
+    }
+    
+    private void mostrarRenglonColumna(){
+    JTextArea area=obtenerAreaActual();
+    if(area==null)
+        return;
+    try{
+        int pos =area.getCaretPosition();
+        int renglon=area.getLineOfOffset(pos)+1;
+        int columna=pos-area.getLineStartOffset(renglon-1);
+        lblRenglon.setText(""+renglon);
+        lblColumna.setText(""+columna);
+    }catch (Exception e){
+        
+    }
+}
+    private void configurarArea(JTextArea area) {
+    area.addMouseListener(new MouseAdapter() {
+        public void mousePressed(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+                mostrarMenuContextual(e);
+            }
+        }
+        public void mouseReleased(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+                mostrarMenuContextual(e);
+            }
+        }
+    });
+    area.addCaretListener(new CaretListener() {
+        public void caretUpdate(CaretEvent e) {
+            mostrarRenglonColumna();
+        }
+    });
+}
+    private void mostrarMenuContextual(MouseEvent e){
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem copiarItem = new JMenuItem(mnuCopiar.getText());
+        JMenuItem cortarItem = new JMenuItem(mnuCortar.getText());
+        JMenuItem pegarItem = new JMenuItem(mnuPegar.getText());
+        
+        copiarItem.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent ev) {
+            copiar();
+        }
+        });
+        cortarItem.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent ev) {
+            cortar();
+        }
+        });
+        pegarItem.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent ev) {
+            pegar();
+        }
+        });
+        
+        menu.add(copiarItem);
+        menu.add(cortarItem);
+        menu.add(pegarItem);
+        
+        menu.show(e.getComponent(), e.getX(), e.getY());
+    }
+    private void copiar(){
+        JTextArea area =obtenerAreaActual();
+        if(area!=null)
+            area.copy();
+    }
+    
+    private void cortar(){
+        JTextArea area=obtenerAreaActual();
+        if(area!=null)
+            area.cut();
+    }
+    
+    private void pegar(){
+        JTextArea area=obtenerAreaActual();
+        if(area!=null)
+            area.paste();
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -435,6 +534,11 @@ public class Principal extends javax.swing.JFrame {
         btnHerramientasCopiar.setFocusable(false);
         btnHerramientasCopiar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasCopiar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnHerramientasCopiar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHerramientasCopiarActionPerformed(evt);
+            }
+        });
         toolBar.add(btnHerramientasCopiar);
 
         btnHerramientasCortar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Cut.png"))); // NOI18N
@@ -442,6 +546,11 @@ public class Principal extends javax.swing.JFrame {
         btnHerramientasCortar.setFocusable(false);
         btnHerramientasCortar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasCortar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnHerramientasCortar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHerramientasCortarActionPerformed(evt);
+            }
+        });
         toolBar.add(btnHerramientasCortar);
 
         btnHerramientasPegar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Paste.png"))); // NOI18N
@@ -449,6 +558,11 @@ public class Principal extends javax.swing.JFrame {
         btnHerramientasPegar.setFocusable(false);
         btnHerramientasPegar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasPegar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnHerramientasPegar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHerramientasPegarActionPerformed(evt);
+            }
+        });
         toolBar.add(btnHerramientasPegar);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -469,10 +583,6 @@ public class Principal extends javax.swing.JFrame {
 
         lblColumna.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblColumna.setText("Columna:");
-
-        jLabel1.setText("jLabel1");
-
-        jLabel2.setText("jLabel1");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -583,16 +693,31 @@ public class Principal extends javax.swing.JFrame {
         mnuCopiar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         mnuCopiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Copy.png"))); // NOI18N
         mnuCopiar.setText("Copiar");
+        mnuCopiar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuCopiarActionPerformed(evt);
+            }
+        });
         mnuBarEditar.add(mnuCopiar);
 
         mnuCortar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         mnuCortar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Cut.png"))); // NOI18N
         mnuCortar.setText("Cortar");
+        mnuCortar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuCortarActionPerformed(evt);
+            }
+        });
         mnuBarEditar.add(mnuCortar);
 
         mnuPegar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         mnuPegar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Paste.png"))); // NOI18N
         mnuPegar.setText("Pegar");
+        mnuPegar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuPegarActionPerformed(evt);
+            }
+        });
         mnuBarEditar.add(mnuPegar);
 
         barraMenu.add(mnuBarEditar);
@@ -675,6 +800,36 @@ public class Principal extends javax.swing.JFrame {
 
         guardarComo(area);
     }//GEN-LAST:event_mnuGuardarComoActionPerformed
+
+    private void mnuCopiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuCopiarActionPerformed
+        // TODO add your handling code here:
+        copiar();
+    }//GEN-LAST:event_mnuCopiarActionPerformed
+
+    private void mnuCortarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuCortarActionPerformed
+        // TODO add your handling code here:
+        cortar();
+    }//GEN-LAST:event_mnuCortarActionPerformed
+
+    private void mnuPegarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuPegarActionPerformed
+        // TODO add your handling code here:
+        pegar();
+    }//GEN-LAST:event_mnuPegarActionPerformed
+
+    private void btnHerramientasCopiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHerramientasCopiarActionPerformed
+        // TODO add your handling code here:
+        copiar();
+    }//GEN-LAST:event_btnHerramientasCopiarActionPerformed
+
+    private void btnHerramientasCortarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHerramientasCortarActionPerformed
+        // TODO add your handling code here:
+        cortar();
+    }//GEN-LAST:event_btnHerramientasCortarActionPerformed
+
+    private void btnHerramientasPegarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHerramientasPegarActionPerformed
+        // TODO add your handling code here:
+        pegar();
+    }//GEN-LAST:event_btnHerramientasPegarActionPerformed
 
     /**
      * @param args the command line arguments
