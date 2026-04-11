@@ -319,51 +319,137 @@ public class Principal extends javax.swing.JFrame {
 
     panelNuevo.removeTabAt(indicador);
 }
-    private void guardarComo(JTextArea area) {
-
-    JFileChooser fileChooser = new JFileChooser();
-
-    //Ruta por defecto (Documentos)
-    File ruta = new File(System.getProperty("user.home") + "/Documents");
-    fileChooser.setCurrentDirectory(ruta);
-
-    // ? Filtro de archivos
-    FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos de texto (*.txt)", "txt");
-    fileChooser.setFileFilter(filtro);
-
-    int seleccion = fileChooser.showSaveDialog(this);
-
-    if (seleccion == JFileChooser.APPROVE_OPTION) {
-
-        File archivo = fileChooser.getSelectedFile();
-
-        // Asegurar extensión .txt
-        if (!archivo.getName().endsWith(".txt")) {
-            archivo = new File(archivo.getAbsolutePath() + ".txt");
+    private void guardarComo(JTextArea area){
+        //Verificar cambios sin guardar
+        String original= (String) area.getClientProperty("ContenidoOriginal");
+        String actual=area.getText();
+        
+        boolean modificado=(original==null || !original.equals(actual));
+        if(modificado){
+            int op=JOptionPane.showConfirmDialog(this, "Hay cambios sin guardar. ¿Deseas guardar cambios?","Guardar Como",JOptionPane.YES_NO_CANCEL_OPTION);
+            if(op==JOptionPane.CANCEL_OPTION) return;
+            if(op==JOptionPane.YES_OPTION){
+                guardar();
+            }
         }
-
-        try {
-            FileWriter writer = new FileWriter(archivo);
-            writer.write(area.getText());
-            writer.close();
-
-            // GUARDAR referencia del archivo
-            area.putClientProperty("archivo", archivo);
-
-            // ACTUALIZAR contenido original
-            area.putClientProperty("contenidoOriginal", area.getText());
-
-            // ACTUALIZAR título de pestaña
-            int index = panelNuevo.getSelectedIndex();
-            panelNuevo.setTitleAt(index, archivo.getName());
-
-            JOptionPane.showMessageDialog(this, "Archivo guardado correctamente");
-
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error al guardar archivo");
+        JFileChooser elejir=new JFileChooser();
+        
+        //ruta por defecto
+        File ruta=new File(System.getProperty("user.home")+"/Documents");
+        elejir.setCurrentDirectory(ruta);
+        
+        //filtro
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos de texto (*.txt)", "txt");
+        elejir.setFileFilter(filtro);
+          
+        int seleccion=elejir.showSaveDialog(this);
+        if(seleccion==JFileChooser.APPROVE_OPTION){
+            File archivo=elejir.getSelectedFile();
+            
+            //asegurar extensión
+            if(!archivo.getName().endsWith(".txt")){
+                archivo=new File(archivo.getAbsolutePath()+".txt");
+            }try{
+                FileWriter escrito=new FileWriter(archivo);
+                escrito.write(area.getText());
+                escrito.close();
+                
+                //guardar referencia
+                area.putClientProperty("archivo", archivo);
+                
+                //guardar referencia
+                area.putClientProperty("ContenidoOriginal",area.getText());
+                
+                //actualizar pestaña
+                int indicador=panelNuevo.getSelectedIndex();
+                panelNuevo.setTitleAt(indicador, archivo.getName());
+                
+                JOptionPane.showMessageDialog(this, "Archivo guardado correctamente");
+                
+            }catch(IOException e){
+                JOptionPane.showMessageDialog(this, "Error al guardar archivo");
+            }
         }
     }
-}
+    
+    private void guardarTodo(){
+        if (panelNuevo.getTabCount()==0){
+            JOptionPane.showMessageDialog(this , "No hay documentos abiertos");
+            return;
+        }
+        for(int i=0;i<panelNuevo.getTabCount();i++){
+            JScrollPane panel=(JScrollPane) panelNuevo.getComponentAt(i);
+            JTextArea area= (JTextArea) panel.getViewport().getView();
+            String original=(String) area.getClientProperty("ContenidoOriginal");
+            String actual= area.getText();
+            boolean modificado=(original==null || !original.equals(actual));
+            
+            if(modificado){
+                File archivo=(File) area.getClientProperty("archivo");
+                
+                //si no tiene archivo guradamos como
+                if(archivo==null){
+                    panelNuevo.setSelectedIndex(i);//cambia de pestaña
+                    guardarComo(area);
+                }else{
+                    try{
+                        FileWriter e=new FileWriter(archivo);
+                        e.write(area.getText());
+                        e.close();
+                        
+                        //actualizar contenido
+                        area.putClientProperty("ContenidoOriginal", area.getText());
+                        area.putClientProperty("modificado", false);
+                        
+                        //quitar *
+                        String titulo=panelNuevo.getTitleAt(i);
+                        panelNuevo.setTitleAt(i, titulo.replace("*", ""));
+                    }catch(IOException e){
+                        JOptionPane.showMessageDialog(this, "Error al guardar archivo");
+                    }
+                }
+                JOptionPane.showMessageDialog(this, "Todos los archivos fueron guardados");
+            }
+        }
+    }
+    private void cerrarTodo(){
+        //si hay pestañas abiertas
+        if (panelNuevo.getTabCount()==0){
+            return;
+        }
+        for(int i=panelNuevo.getTabCount()-1;i>=0;i--){
+            JScrollPane deslizar=(JScrollPane) panelNuevo.getComponentAt(i);
+            JTextArea area=(JTextArea) deslizar.getViewport().getView();
+            String original=(String) area.getClientProperty("ContenidoOriginal");
+            String actual= area.getText();
+            
+            boolean modificado=(original==null ||!original.equals(actual));
+            if(modificado){
+                panelNuevo.setSelectedIndex(i);
+                int op=JOptionPane.showConfirmDialog(this, "¿Deseas guardar cambios antes de cerrar?", "Cerrar todo", JOptionPane.YES_NO_CANCEL_OPTION);
+                if(op==JOptionPane.CANCEL_OPTION) return;
+                if(op==JOptionPane.YES_OPTION){
+                    File archivo=(File) area.getClientProperty("archivo");
+                    if(archivo==null){
+                        guardarComo(area);
+                    }else{
+                        try{
+                            FileWriter e=new FileWriter(archivo);
+                            e.write(area.getText());
+                            e.close();
+                            
+                            area.putClientProperty("ContenidoOriginal", area.getText());
+                            
+                        }catch(IOException e){
+                            JOptionPane.showMessageDialog(this, "Error al Guardar archivo");
+                            return;
+                        }
+                    }
+                }
+            }
+            panelNuevo.removeTabAt(i);//cierra pestaña
+        }
+    }
     
     private JTextArea obtenerAreaActual(){
         int i =panelNuevo.getSelectedIndex();
@@ -513,6 +599,11 @@ public class Principal extends javax.swing.JFrame {
         btnHerramientasAbrir.setFocusable(false);
         btnHerramientasAbrir.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasAbrir.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnHerramientasAbrir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHerramientasAbrirActionPerformed(evt);
+            }
+        });
         toolBar.add(btnHerramientasAbrir);
 
         btnHerramientasGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Save.png"))); // NOI18N
@@ -520,6 +611,11 @@ public class Principal extends javax.swing.JFrame {
         btnHerramientasGuardar.setFocusable(false);
         btnHerramientasGuardar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasGuardar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnHerramientasGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHerramientasGuardarActionPerformed(evt);
+            }
+        });
         toolBar.add(btnHerramientasGuardar);
 
         btnHerramientasGuardarTodo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/SaveAll.png"))); // NOI18N
@@ -527,6 +623,11 @@ public class Principal extends javax.swing.JFrame {
         btnHerramientasGuardarTodo.setFocusable(false);
         btnHerramientasGuardarTodo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnHerramientasGuardarTodo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnHerramientasGuardarTodo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHerramientasGuardarTodoActionPerformed(evt);
+            }
+        });
         toolBar.add(btnHerramientasGuardarTodo);
 
         btnHerramientasCopiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Copy.png"))); // NOI18N
@@ -660,6 +761,11 @@ public class Principal extends javax.swing.JFrame {
 
         mnuGuardarTodo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/SaveAll.png"))); // NOI18N
         mnuGuardarTodo.setText("Guardar Todo");
+        mnuGuardarTodo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuGuardarTodoActionPerformed(evt);
+            }
+        });
         mnuBarArchivo.add(mnuGuardarTodo);
 
         mnuCerrarDocumento.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/CloseDocument.png"))); // NOI18N
@@ -673,6 +779,11 @@ public class Principal extends javax.swing.JFrame {
 
         mnuCerrarTodo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/CloseAll.png"))); // NOI18N
         mnuCerrarTodo.setText("Cerrar Todo");
+        mnuCerrarTodo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuCerrarTodoActionPerformed(evt);
+            }
+        });
         mnuBarArchivo.add(mnuCerrarTodo);
         mnuBarArchivo.add(jSeparator1);
 
@@ -830,6 +941,26 @@ public class Principal extends javax.swing.JFrame {
         // TODO add your handling code here:
         pegar();
     }//GEN-LAST:event_btnHerramientasPegarActionPerformed
+
+    private void mnuGuardarTodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuGuardarTodoActionPerformed
+        guardarTodo();
+    }//GEN-LAST:event_mnuGuardarTodoActionPerformed
+
+    private void btnHerramientasAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHerramientasAbrirActionPerformed
+        abrir();
+    }//GEN-LAST:event_btnHerramientasAbrirActionPerformed
+
+    private void btnHerramientasGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHerramientasGuardarActionPerformed
+        guardar();
+    }//GEN-LAST:event_btnHerramientasGuardarActionPerformed
+
+    private void btnHerramientasGuardarTodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHerramientasGuardarTodoActionPerformed
+        guardarTodo();
+    }//GEN-LAST:event_btnHerramientasGuardarTodoActionPerformed
+
+    private void mnuCerrarTodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuCerrarTodoActionPerformed
+        cerrarTodo();
+    }//GEN-LAST:event_mnuCerrarTodoActionPerformed
 
     /**
      * @param args the command line arguments
