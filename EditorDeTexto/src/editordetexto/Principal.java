@@ -95,9 +95,57 @@ public class Principal extends javax.swing.JFrame {
                 ((javax.swing.JButton) comp).setToolTipText(opcionesIdioma.get(posicion));
             }
         }
+        
+        // Traducción de etiquetas de estado
+        posicion++;
+        lblRenglon.setText(opcionesIdioma.get(posicion));
+        posicion++;
+        lblColumna.setText(opcionesIdioma.get(posicion));
     }
     
 }
+   // Este es el MÉTODO NUEVO que debes agregar en Principal.java
+    private String obtenerMensaje(String clave) {
+        // Verificamos en qué idioma está el primer menú
+        boolean enIngles = false;
+        if (barraMenu.getMenuCount() > 0 && barraMenu.getMenu(0).getText().equals("File")) {
+            enIngles = true;
+        }
+
+        switch (clave) {
+            case "FiltroTxt":
+                return enIngles ? "Text Files (*.txt)" : "Archivos de texto (*.txt)";
+            case "ErrorCrear":
+                return enIngles ? "Error creating file" : "Error al crear archivo";
+            case "GuardadoOk":
+                return enIngles ? "File saved successfully" : "Archivo guardado correctamente";
+            case "ErrorGuardar":
+                return enIngles ? "Error saving file" : "Error al guardar archivo";
+            case "NoDocumento":
+                return enIngles ? "No open document" : "No hay documento abierto";
+            case "SinCambios":
+                return enIngles ? "No documents open to save" : "No hay documentos abiertos";
+            case "ErrorAbrir":
+                return enIngles ? "Error opening file" : "Error al abrir archivo";
+            case "PreguntaGuardar":
+                return enIngles ? "Do you want to save changes before closing?" : "¿Deseas guardar los cambios antes de cerrar?";
+            case "TituloCerrar":
+                return enIngles ? "Close document" : "Cerrar documento";
+            case "CambiosSinGuardar":
+                return enIngles ? "There are unsaved changes. Do you want to save?" : "Hay cambios sin guardar. ¿Deseas guardar cambios?";
+            case "TituloGuardarComo":
+                return enIngles ? "Save As" : "Guardar Como";
+            case "SinDocumentos":
+                return enIngles ? "No open documents" : "No hay documentos abiertos";
+            case "TodosGuardados":
+                return enIngles ? "All files were saved successfully" : "Todos los archivos fueron guardados";
+            case "TituloCerrarTodo":
+                return enIngles ? "Close all" : "Cerrar todo";
+            default:
+                return clave;
+        }
+    }
+    
     
     // --Metodo para preparar el HashMap
     private void cargarIdiomas() {
@@ -124,6 +172,7 @@ public class Principal extends javax.swing.JFrame {
     
         espanol.add("Acerca De");         // Menú Principal 4
         
+        
         // --AQUÍ AGREGA LOS TOOLTIPS:
         espanol.add("Nuevo");        
         espanol.add("Abrir");        
@@ -131,9 +180,13 @@ public class Principal extends javax.swing.JFrame {
         espanol.add("Guardar Todo"); 
         espanol.add("Copiar");       
         espanol.add("Cortar");       
-        espanol.add("Pegar");        
+        espanol.add("Pegar");   
+        
+        // --- ETIQUETAS INFERIORES ---
+        espanol.add("Renglón: ");
+        espanol.add("Columna: ");
+        
     
-
         // Lista en Inglés (DEBEN ESTAR EN EL MISMO ORDEN)
         //Creacion de arraylist para los idiomas
         ArrayList ingles = new ArrayList();//Traducido a Ingles
@@ -165,6 +218,11 @@ public class Principal extends javax.swing.JFrame {
         ingles.add("Copy");          
         ingles.add("Cut");           
         ingles.add("Paste");
+        
+        // --- ETIQUETAS INFERIORES ---
+        ingles.add("Line: ");
+        ingles.add("Column: ");
+        
 
         idiomas.put("ES", espanol);
         idiomas.put("EN", ingles);
@@ -174,8 +232,9 @@ public class Principal extends javax.swing.JFrame {
 
        file.setCurrentDirectory(new File(System.getProperty("user.home") + "/Documents"));
 
-       FileNameExtensionFilter filtro=new FileNameExtensionFilter("Archivos de texto (*.txt)", "txt");
-       file.setFileFilter(filtro);
+       // --- USAMOS EL MÉTODO DE TRADUCCIÓN PARA EL FILTRO ---
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter(obtenerMensaje("FiltroTxt"), "txt");
+        file.setFileFilter(filtro);
 
        int seleccion=file.showSaveDialog(this);
 
@@ -199,31 +258,31 @@ public class Principal extends javax.swing.JFrame {
                 area.putClientProperty("archivo", archivo);
 
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(this, "Error al crear archivo");
+                // --- USAMOS EL MÉTODO DE TRADUCCIÓN PARA EL ERROR ---
+                JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorCrear"));
             }
         }
     }
     
-     private void guardar() {
-
+    private void guardar() {
     int index = panelNuevo.getSelectedIndex();
 
     if (index == -1) {
-        JOptionPane.showMessageDialog(this, "No hay documento abierto");
+        JOptionPane.showMessageDialog(this, obtenerMensaje("NoDocumento"));
         return;
     }
 
     JScrollPane scroll = (JScrollPane) panelNuevo.getComponentAt(index);
     JTextArea area = (JTextArea) scroll.getViewport().getView();
-
     File archivo = (File) area.getClientProperty("archivo");
 
-    // ? Si no tiene archivo ? usar guardar como
-   // if (archivo == null) {
-      //  guardarComo(area);
-       // return;
-   // }
-
+    // --- LÓGICA CRUCIAL: Si es un documento "Nuevo", no tiene ruta.
+    // Lo mandamos al método guardarComo para que el usuario elija dónde guardarlo.
+    if (archivo == null) {
+        guardarComo(area);
+        return;
+    }
+    
     try {
         FileWriter escribir = new FileWriter(archivo);
         escribir.write(area.getText());
@@ -237,61 +296,57 @@ public class Principal extends javax.swing.JFrame {
         String titulo = panelNuevo.getTitleAt(index);
         panelNuevo.setTitleAt(index, titulo.replace("*", ""));
 
-        JOptionPane.showMessageDialog(this, "Archivo guardado correctamente");
+        // --- 2. TRADUCCIÓN: Mensaje de éxito ---
+        JOptionPane.showMessageDialog(this, obtenerMensaje("GuardadoOk"));
 
     } catch (IOException e) {
-        JOptionPane.showMessageDialog(this, "Error al guardar archivo");
+        // --- 3. TRADUCCIÓN: Mensaje de error ---
+        JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorGuardar"));
     }
 }
     private void abrir() {
-
     JFileChooser opc = new JFileChooser();
-
     File ruta = new File(System.getProperty("user.home") + "/Documents");
     opc.setCurrentDirectory(ruta);
-
-    FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos de texto (*.txt)", "txt");
+    
+    // --- 1. TRADUCCIÓN: El texto del filtro ---
+    FileNameExtensionFilter filtro = new FileNameExtensionFilter(obtenerMensaje("FiltroTxt"), "txt");
     opc.setFileFilter(filtro);
-
+    
     int seleccion = opc.showOpenDialog(this);
 
     if (seleccion == JFileChooser.APPROVE_OPTION) {
-
         File archivo = opc.getSelectedFile();
-
+    
         // evitar abrir el mismo archivo dos veces
         for (int i = 0; i < panelNuevo.getTabCount(); i++) {
             JScrollPane d = (JScrollPane) panelNuevo.getComponentAt(i);
             JTextArea a = (JTextArea) d.getViewport().getView();
-
             File abierto = (File) a.getClientProperty("archivo");
-
             if (abierto != null && abierto.equals(archivo)) {
                 panelNuevo.setSelectedIndex(i);
                 return;
             }
         }
-
+        
         try {
             String contenido = new String(Files.readAllBytes(archivo.toPath()));
-
             JTextArea area = new JTextArea();
             area.setText(contenido);
             configurarArea(area);
-
             JScrollPane desliz = new JScrollPane(area);
-
+        
             panelNuevo.addTab(archivo.getName(), desliz);
             panelNuevo.setSelectedComponent(desliz);
-
+            
             area.putClientProperty("archivo", archivo);
-
             // necesario para detectar cambios
             area.putClientProperty("contenidoOriginal", contenido);
             area.putClientProperty("modificado", false);
-
+        
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error al abrir archivo");
+            // --- 2. TRADUCCIÓN: Mensaje de error ---
+            JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorAbrir"));
         }
     }
 }
@@ -315,8 +370,8 @@ public class Principal extends javax.swing.JFrame {
 
         int opcion = JOptionPane.showConfirmDialog(
                 this,
-                "¿Deseas guardar los cambios antes de cerrar?",
-                "Cerrar documento",
+                obtenerMensaje("PreguntaGuardar"),
+                obtenerMensaje("TituloCerrar"),
                 JOptionPane.YES_NO_CANCEL_OPTION
         );
 
@@ -326,7 +381,6 @@ public class Principal extends javax.swing.JFrame {
             guardar();
         }
     }
-
     panelNuevo.removeTabAt(indicador);
 }
     private void guardarComo(JTextArea area){
@@ -335,56 +389,68 @@ public class Principal extends javax.swing.JFrame {
         String actual=area.getText();
         
         boolean modificado=(original==null || !original.equals(actual));
-        if(modificado){
-            int op=JOptionPane.showConfirmDialog(this, "Hay cambios sin guardar. ¿Deseas guardar cambios?","Guardar Como",JOptionPane.YES_NO_CANCEL_OPTION);
-            if(op==JOptionPane.CANCEL_OPTION) return;
-            if(op==JOptionPane.YES_OPTION){
+        
+        if (modificado) {
+            int op = JOptionPane.showConfirmDialog(
+                this, 
+                obtenerMensaje("CambiosSinGuardar"), // <-- TRADUCCIÓN
+                obtenerMensaje("TituloGuardarComo"), // <-- TRADUCCIÓN
+                JOptionPane.YES_NO_CANCEL_OPTION
+            );
+        
+            if (op == JOptionPane.CANCEL_OPTION) return;
+            if (op == JOptionPane.YES_OPTION) {
                 guardar();
             }
         }
+        
         JFileChooser elejir=new JFileChooser();
         
         //ruta por defecto
         File ruta=new File(System.getProperty("user.home")+"/Documents");
         elejir.setCurrentDirectory(ruta);
         
-        //filtro
-        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos de texto (*.txt)", "txt");
+        // --- TRADUCCIÓN DEL FILTRO ---
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter(obtenerMensaje("FiltroTxt"), "txt");
         elejir.setFileFilter(filtro);
           
         int seleccion=elejir.showSaveDialog(this);
+        
         if(seleccion==JFileChooser.APPROVE_OPTION){
             File archivo=elejir.getSelectedFile();
             
             //asegurar extensión
             if(!archivo.getName().endsWith(".txt")){
                 archivo=new File(archivo.getAbsolutePath()+".txt");
-            }try{
+            }
+            try{
                 FileWriter escrito=new FileWriter(archivo);
                 escrito.write(area.getText());
                 escrito.close();
                 
-                //guardar referencia
+                // Guardar referencias y actualizar estado
                 area.putClientProperty("archivo", archivo);
-                
-                //guardar referencia
-                area.putClientProperty("ContenidoOriginal",area.getText());
+                area.putClientProperty("ContenidoOriginal", area.getText());
+                area.putClientProperty("modificado", false);
                 
                 //actualizar pestaña
                 int indicador=panelNuevo.getSelectedIndex();
                 panelNuevo.setTitleAt(indicador, archivo.getName());
                 
-                JOptionPane.showMessageDialog(this, "Archivo guardado correctamente");
+                // --- MENSAJE DE ÉXITO TRADUCIDO ---
+                JOptionPane.showMessageDialog(this, obtenerMensaje("GuardadoOk"));
                 
             }catch(IOException e){
-                JOptionPane.showMessageDialog(this, "Error al guardar archivo");
+                // --- MENSAJE DE ERROR TRADUCIDO ---
+                JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorGuardar"));
             }
         }
     }
     
     private void guardarTodo(){
         if (panelNuevo.getTabCount()==0){
-            JOptionPane.showMessageDialog(this , "No hay documentos abiertos");
+            // --- 1. TRADUCCIÓN: No hay documentos ---
+            JOptionPane.showMessageDialog(this, obtenerMensaje("SinDocumentos"));
             return;
         }
         for(int i=0;i<panelNuevo.getTabCount();i++){
@@ -415,49 +481,64 @@ public class Principal extends javax.swing.JFrame {
                         String titulo=panelNuevo.getTitleAt(i);
                         panelNuevo.setTitleAt(i, titulo.replace("*", ""));
                     }catch(IOException e){
-                        JOptionPane.showMessageDialog(this, "Error al guardar archivo");
+                        // --- 2. TRADUCCIÓN: Error al guardar (Ya teníamos esta clave) ---
+                        JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorGuardar"));
                     }
                 }
-                JOptionPane.showMessageDialog(this, "Todos los archivos fueron guardados");
             }
         }
+        // --- 3. TRADUCCIÓN: Éxito total ---
+        JOptionPane.showMessageDialog(this, obtenerMensaje("TodosGuardados"));
     }
-    private void cerrarTodo(){
-        //si hay pestañas abiertas
-        if (panelNuevo.getTabCount()==0){
+    
+    private void cerrarTodo() {
+        // si no hay pestañas abiertas
+        if (panelNuevo.getTabCount() == 0) {
             return;
         }
-        for(int i=panelNuevo.getTabCount()-1;i>=0;i--){
-            JScrollPane deslizar=(JScrollPane) panelNuevo.getComponentAt(i);
-            JTextArea area=(JTextArea) deslizar.getViewport().getView();
-            String original=(String) area.getClientProperty("ContenidoOriginal");
-            String actual= area.getText();
-            
-            boolean modificado=(original==null ||!original.equals(actual));
-            if(modificado){
+    
+        for (int i = panelNuevo.getTabCount() - 1; i >= 0; i--) {
+            JScrollPane deslizar = (JScrollPane) panelNuevo.getComponentAt(i);
+            JTextArea area = (JTextArea) deslizar.getViewport().getView();
+            String original = (String) area.getClientProperty("ContenidoOriginal");
+            String actual = area.getText();
+        
+            boolean modificado = (original == null || !original.equals(actual));
+        
+            if (modificado) {
                 panelNuevo.setSelectedIndex(i);
-                int op=JOptionPane.showConfirmDialog(this, "¿Deseas guardar cambios antes de cerrar?", "Cerrar todo", JOptionPane.YES_NO_CANCEL_OPTION);
-                if(op==JOptionPane.CANCEL_OPTION) return;
-                if(op==JOptionPane.YES_OPTION){
-                    File archivo=(File) area.getClientProperty("archivo");
-                    if(archivo==null){
+            
+                // --- 1. TRADUCCIÓN: Pregunta y Título (Reciclamos "PreguntaGuardar") ---
+                int op = JOptionPane.showConfirmDialog(
+                    this, 
+                    obtenerMensaje("PreguntaGuardar"), 
+                    obtenerMensaje("TituloCerrarTodo"), 
+                    JOptionPane.YES_NO_CANCEL_OPTION
+                );
+            
+                if (op == JOptionPane.CANCEL_OPTION) return;
+            
+                if (op == JOptionPane.YES_OPTION) {
+                    File archivo = (File) area.getClientProperty("archivo");
+                    if (archivo == null) {
                         guardarComo(area);
-                    }else{
-                        try{
-                            FileWriter e=new FileWriter(archivo);
+                    } else {
+                        try {
+                            FileWriter e = new FileWriter(archivo);
                             e.write(area.getText());
                             e.close();
-                            
-                            area.putClientProperty("ContenidoOriginal", area.getText());
-                            
-                        }catch(IOException e){
-                            JOptionPane.showMessageDialog(this, "Error al Guardar archivo");
+                        
+                         area.putClientProperty("ContenidoOriginal", area.getText());
+                        
+                        } catch (IOException e) {
+                            // --- 2. TRADUCCIÓN: Error (Reciclamos "ErrorGuardar") ---
+                            JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorGuardar"));
                             return;
                         }
                     }
                 }
             }
-            panelNuevo.removeTabAt(i);//cierra pestaña
+            panelNuevo.removeTabAt(i); // cierra pestaña
         }
     }
     
