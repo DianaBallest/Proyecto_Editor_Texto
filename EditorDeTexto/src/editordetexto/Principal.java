@@ -1,6 +1,6 @@
 package editordetexto;
 // Ventana Principal
-
+//14-04-2026
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,7 +20,7 @@ import javax.swing.JTextArea;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
+//avanceii
 /**
  *
  * @author Diana, Valeria, Areli
