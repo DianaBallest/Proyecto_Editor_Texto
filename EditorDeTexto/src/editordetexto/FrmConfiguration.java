@@ -28,12 +28,20 @@ public class FrmConfiguration extends javax.swing.JFrame {
             if (tamano != null) miComponente.comboTamano.setSelectedItem(tamano);
             if (ruta != null) miComponente.txtRuta.setText(ruta);
 
+            
             if ("ES".equals(idioma)) {
                 miComponente.radioEspanol.setSelected(true);
                 miComponente.IdiomaESP();
+                
+                btnAceptar.setText("Aceptar");
+                btnCancelar.setText("Cancelar");
+                
             } else if ("EN".equals(idioma)) {
                 miComponente.radioIngles.setSelected(true);
                 miComponente.IdiomaENG();
+                
+                btnAceptar.setText("Accept"); // o puedes usar "OK"
+                btnCancelar.setText("Cancel");
             }
         }
     }
