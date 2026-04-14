@@ -1,4 +1,3 @@
-
 package editordetexto;
 // Ventana Principal
 
@@ -30,6 +29,9 @@ public class Principal extends javax.swing.JFrame {
     //Apareceran en order los componenentes traduccidos ya se en ES O EN
     //Generamos hashmap para poder guardar los valores a traducir
     private HashMap<String,ArrayList> idiomas = new HashMap<>();
+    
+    // Variable para guardar la fuente que se leyó del archivo
+    private java.awt.Font fuenteConfigurada;
 
     public Principal() {
         initComponents();
@@ -47,6 +49,14 @@ public class Principal extends javax.swing.JFrame {
     java.util.Properties propiedades = manejador.LeerPropiedades();
 
     if (propiedades != null) {
+        // --- 1. LÓGICA DE FUENTE (Parte 8) ---
+        String tipo = propiedades.getProperty("Fuente", "Arial");
+        int estilo = Integer.parseInt(propiedades.getProperty("Estilo", "0"));
+        int tamano = Integer.parseInt(propiedades.getProperty("Tamano", "12"));
+        
+        // Guardamos la fuente en nuestra variable global
+        this.fuenteConfigurada = new java.awt.Font(tipo, estilo, tamano);
+  
         // Obtenemos el idioma (EN o ES)
         String idiomaConfigurado = propiedades.getProperty("Idioma", "ES");
         java.util.ArrayList<String> opcionesIdioma = idiomas.get(idiomaConfigurado);
@@ -474,6 +484,11 @@ public class Principal extends javax.swing.JFrame {
     }
 }
     private void configurarArea(JTextArea area) {
+        // Aplicamos la fuente cargada del archivo (Parte 8)
+        if (this.fuenteConfigurada != null) {
+            area.setFont(this.fuenteConfigurada);
+        }
+        
     area.addMouseListener(new MouseAdapter() {
         public void mousePressed(MouseEvent e) {
             if (e.isPopupTrigger()) {
