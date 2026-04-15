@@ -227,6 +227,7 @@ public class Principal extends javax.swing.JFrame {
         idiomas.put("ES", espanol);
         idiomas.put("EN", ingles);
     }
+    
     private void nuevo(){
        JFileChooser file=new JFileChooser();
 
@@ -256,6 +257,11 @@ public class Principal extends javax.swing.JFrame {
                 panelNuevo.setSelectedComponent(scroll);
 
                 area.putClientProperty("archivo", archivo);
+                
+                // --- AQUÍ PRENDEMOS EL SEMÁFORO VERDE ---
+                area.putClientProperty("ContenidoOriginal", ""); // El archivo empieza vacío
+                area.putClientProperty("modificado", false);     // No está modificado
+                actualizarEstadoPestana(area, false);            // Ponemos el circulito verde
 
             } catch (IOException e) {
                 // --- USAMOS EL MÉTODO DE TRADUCCIÓN PARA EL ERROR ---
@@ -295,6 +301,9 @@ public class Principal extends javax.swing.JFrame {
         // quitar *
         String titulo = panelNuevo.getTitleAt(index);
         panelNuevo.setTitleAt(index, titulo.replace("*", ""));
+        
+        // --- AQUÍ CAMBIAMOS A VERDE (Sustituye tu viejo código de quitar asteriscos) ---
+        actualizarEstadoPestana(area, false);
 
         // --- 2. TRADUCCIÓN: Mensaje de éxito ---
         JOptionPane.showMessageDialog(this, obtenerMensaje("GuardadoOk"));
@@ -343,6 +352,9 @@ public class Principal extends javax.swing.JFrame {
             // necesario para detectar cambios
             area.putClientProperty("contenidoOriginal", contenido);
             area.putClientProperty("modificado", false);
+            
+            // --- AQUÍ CONECTAMOS EL INDICADOR VERDE ---
+            actualizarEstadoPestana(area, false);
         
         } catch (IOException e) {
             // --- 2. TRADUCCIÓN: Mensaje de error ---
@@ -477,9 +489,10 @@ public class Principal extends javax.swing.JFrame {
                         area.putClientProperty("ContenidoOriginal", area.getText());
                         area.putClientProperty("modificado", false);
                         
-                        //quitar *
-                        String titulo=panelNuevo.getTitleAt(i);
-                        panelNuevo.setTitleAt(i, titulo.replace("*", ""));
+                        // --- ACTUALIZAMOS CADA PESTAÑA A VERDE ---
+                        actualizarEstadoPestana(area, false);
+                        
+      
                     }catch(IOException e){
                         // --- 2. TRADUCCIÓN: Error al guardar (Ya teníamos esta clave) ---
                         JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorGuardar"));
@@ -585,6 +598,25 @@ public class Principal extends javax.swing.JFrame {
     area.addCaretListener(new CaretListener() {
         public void caretUpdate(CaretEvent e) {
             mostrarRenglonColumna();
+        }
+    });
+    
+    // Listener para detectar cambios en el texto
+    area.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+        @Override
+        public void insertUpdate(javax.swing.event.DocumentEvent e) { verificarCambio(); }
+        @Override
+        public void removeUpdate(javax.swing.event.DocumentEvent e) { verificarCambio(); }
+        @Override
+        public void changedUpdate(javax.swing.event.DocumentEvent e) { verificarCambio(); }
+
+        private void verificarCambio() {
+            // Solo cambiamos a rojo si no estaba ya marcado como modificado
+            Boolean mod = (Boolean) area.getClientProperty("modificado");
+            if (mod == null || !mod) {
+                area.putClientProperty("modificado", true);
+                actualizarEstadoPestana(area, true); // <--- CAMBIA A ROJO Y NEGRITA
+            }
         }
     });
 }
@@ -1128,4 +1160,58 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JTabbedPane panelNuevo;
     private javax.swing.JToolBar toolBar;
     // End of variables declaration//GEN-END:variables
+
+    // AQUÍ PEGAS EL MÉTODO QUE ME ACABAS DE MANDAR 
+    private void actualizarEstadoPestana(javax.swing.JTextArea area, boolean modificado) {
+        int index = -1;
+        for (int i = 0; i < panelNuevo.getTabCount(); i++) {
+            javax.swing.JScrollPane scroll = (javax.swing.JScrollPane) panelNuevo.getComponentAt(i);
+            if (scroll.getViewport().getView() == area) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index != -1) {
+        java.io.File archivo = (java.io.File) area.getClientProperty("archivo");
+        String nombreArchivo = (archivo != null) ? archivo.getName() : "Documento Nuevo.txt";
+
+        // Creamos una etiqueta nativa para tener control total del diseño
+        javax.swing.JLabel etiquetaPestana = new javax.swing.JLabel(nombreArchivo);
+
+        if (modificado) {
+            // Ponemos fuente en negrita e Icono ROJO
+            etiquetaPestana.setFont(new java.awt.Font("Tahoma", java.awt.Font.BOLD, 12));
+            etiquetaPestana.setIcon(new IconoEstado(java.awt.Color.RED));
+        } else {
+            // Ponemos fuente normal e Icono VERDE
+            etiquetaPestana.setFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 12));
+            etiquetaPestana.setIcon(new IconoEstado(java.awt.Color.GREEN));
+        }
+        
+        // Colocamos nuestra etiqueta personalizada en la pestaña
+        panelNuevo.setTabComponentAt(index, etiquetaPestana);
+    }
+    }
+
+    
+    class IconoEstado implements javax.swing.Icon {
+        private java.awt.Color color;
+
+        public IconoEstado(java.awt.Color color) {
+            this.color = color;
+        }
+
+        @Override
+        public void paintIcon(java.awt.Component c, java.awt.Graphics g, int x, int y) {
+            g.setColor(color);
+            g.fillOval(x, y + 2, 10, 10);
+        }
+
+        @Override
+        public int getIconWidth() { return 10; }
+
+        @Override
+        public int getIconHeight() { return 12; }
+    }
 }
