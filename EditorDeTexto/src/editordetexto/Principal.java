@@ -509,7 +509,6 @@ public class Principal extends javax.swing.JFrame {
         if (panelNuevo.getTabCount() == 0) {
             return;
         }
-    
         for (int i = panelNuevo.getTabCount() - 1; i >= 0; i--) {
             JScrollPane deslizar = (JScrollPane) panelNuevo.getComponentAt(i);
             JTextArea area = (JTextArea) deslizar.getViewport().getView();
@@ -552,6 +551,16 @@ public class Principal extends javax.swing.JFrame {
                 }
             }
             panelNuevo.removeTabAt(i); // cierra pestaña
+        }
+    }
+    
+    private void salir() {
+        // 1. Mandamos llamar a tu método que cierra y pregunta
+        cerrarTodo(); 
+
+        // 2. Si las pestañas llegaron a cero, es seguro apagar el programa
+        if (panelNuevo.getTabCount() == 0) {
+            System.exit(0); 
         }
     }
     
@@ -706,7 +715,12 @@ public class Principal extends javax.swing.JFrame {
         mnuConfiguracion = new javax.swing.JMenuItem();
         mnuBarAcercaDe = new javax.swing.JMenu();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         toolBar.setRollover(true);
 
@@ -1002,7 +1016,7 @@ public class Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void mnuSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuSalirActionPerformed
-        System.exit(0);
+        salir();
     }//GEN-LAST:event_mnuSalirActionPerformed
 
     private void mnuConfiguracionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuConfiguracionActionPerformed
@@ -1089,6 +1103,10 @@ public class Principal extends javax.swing.JFrame {
     private void mnuCerrarTodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuCerrarTodoActionPerformed
         cerrarTodo();
     }//GEN-LAST:event_mnuCerrarTodoActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        salir();  
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
