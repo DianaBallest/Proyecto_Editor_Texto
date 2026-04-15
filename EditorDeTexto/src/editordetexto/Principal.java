@@ -580,8 +580,8 @@ public class Principal extends javax.swing.JFrame {
         int pos =area.getCaretPosition();
         int renglon=area.getLineOfOffset(pos)+1;
         int columna=pos-area.getLineStartOffset(renglon-1);
-        lblRenglon.setText(""+renglon);
-        lblColumna.setText(""+columna);
+        lblR.setText(""+renglon);
+        lblC.setText(""+columna);
     }catch (Exception e){
         
     }
@@ -694,8 +694,8 @@ public class Principal extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         lblRenglon = new javax.swing.JLabel();
         lblColumna = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        lblC = new javax.swing.JLabel();
+        lblR = new javax.swing.JLabel();
         barraMenu = new javax.swing.JMenuBar();
         mnuBarArchivo = new javax.swing.JMenu();
         mnuNuevo = new javax.swing.JMenuItem();
@@ -835,11 +835,11 @@ public class Principal extends javax.swing.JFrame {
                 .addGap(16, 16, 16)
                 .addComponent(lblRenglon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblR, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(47, 47, 47)
                 .addComponent(lblColumna, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblC, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -849,8 +849,8 @@ public class Principal extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lblRenglon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblR, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
+                    .addComponent(lblC, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblColumna, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -1152,12 +1152,12 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton btnHerramientasGuardarTodo;
     private javax.swing.JButton btnHerramientasNuevo;
     private javax.swing.JButton btnHerramientasPegar;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JLabel lblC;
     private javax.swing.JLabel lblColumna;
+    private javax.swing.JLabel lblR;
     private javax.swing.JLabel lblRenglon;
     private javax.swing.JMenuItem mnuAbrir;
     private javax.swing.JMenu mnuBarAcercaDe;
