@@ -118,6 +118,8 @@ public class Principal extends javax.swing.JFrame {
         posicion++;
         lblColumna.setText(opcionesIdioma.get(posicion));
     }
+    // --- TRADUCCIÓN DEL TÍTULO DE LA VENTANA ---
+        this.setTitle(obtenerMensaje("TituloApp"));
     
 }
    // Este es el MÉTODO NUEVO que debes agregar en Principal.java
@@ -157,6 +159,8 @@ public class Principal extends javax.swing.JFrame {
                 return enIngles ? "All files were saved successfully" : "Todos los archivos fueron guardados";
             case "TituloCerrarTodo":
                 return enIngles ? "Close all" : "Cerrar todo";
+            case "TituloApp":
+                return enIngles ? "Text Editor" : "Editor de Texto";
             default:
                 return clave;
         }
@@ -275,7 +279,7 @@ public class Principal extends javax.swing.JFrame {
                 area.putClientProperty("archivo", archivo);
                 
                 // --- AQUÍ PRENDEMOS EL SEMÁFORO VERDE ---
-                area.putClientProperty("ContenidoOriginal", ""); // El archivo empieza vacío
+                area.putClientProperty("contenidoOriginal", ""); // El archivo empieza vacío
                 area.putClientProperty("modificado", false);     // No está modificado
                 actualizarEstadoPestana(area, false);            // Ponemos el circulito verde
 
@@ -412,7 +416,7 @@ public class Principal extends javax.swing.JFrame {
 }
     private void guardarComo(JTextArea area){
         //Verificar cambios sin guardar
-        String original= (String) area.getClientProperty("ContenidoOriginal");
+        String original= (String) area.getClientProperty("contenidoOriginal");
         String actual=area.getText();
         
         boolean modificado=(original==null || !original.equals(actual));
@@ -455,7 +459,7 @@ public class Principal extends javax.swing.JFrame {
                 
                 // Guardar referencias y actualizar estado
                 area.putClientProperty("archivo", archivo);
-                area.putClientProperty("ContenidoOriginal", area.getText());
+                area.putClientProperty("contenidoOriginal", area.getText());
                 area.putClientProperty("modificado", false);
                 
                 //actualizar pestaña
@@ -481,7 +485,7 @@ public class Principal extends javax.swing.JFrame {
         for(int i=0;i<panelNuevo.getTabCount();i++){
             JScrollPane panel=(JScrollPane) panelNuevo.getComponentAt(i);
             JTextArea area= (JTextArea) panel.getViewport().getView();
-            String original=(String) area.getClientProperty("ContenidoOriginal");
+            String original=(String) area.getClientProperty("contenidoOriginal");
             String actual= area.getText();
             boolean modificado=(original==null || !original.equals(actual));
             
@@ -499,7 +503,7 @@ public class Principal extends javax.swing.JFrame {
                         e.close();
                         
                         //actualizar contenido
-                        area.putClientProperty("ContenidoOriginal", area.getText());
+                        area.putClientProperty("contenidoOriginal", area.getText());
                         area.putClientProperty("modificado", false);
                         
                         // --- ACTUALIZAMOS CADA PESTAÑA A VERDE ---
@@ -540,7 +544,8 @@ public class Principal extends javax.swing.JFrame {
         int opc=JOptionPane.NO_OPTION;
         
         if(eCambios){
-            opc=JOptionPane.showConfirmDialog(this, "¿Deseas guardar los cambios antes de cerrar?", "Cerrar todo", JOptionPane.YES_NO_CANCEL_OPTION);
+            // --- TRADUCCIÓN APLICADA AQUÍ ---
+            opc=JOptionPane.showConfirmDialog(this, obtenerMensaje("PreguntaGuardar"), obtenerMensaje("TituloCerrarTodo"), JOptionPane.YES_NO_CANCEL_OPTION);
             if(opc==JOptionPane.CANCEL_OPTION) return;
         }
         for(int i=total - 1;i>=0; i--){
@@ -565,7 +570,8 @@ public class Principal extends javax.swing.JFrame {
                             
                             area.putClientProperty("contenidoOriginal", area.getText());
                         } catch(IOException e){
-                            JOptionPane.showMessageDialog(this, "Error al guardar");
+                            // --- TRADUCCIÓN APLICADA AQUÍ ---
+                            JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorGuardar"));
                             return;
                         }
                     }
@@ -737,6 +743,8 @@ public class Principal extends javax.swing.JFrame {
         mnuBarAcercaDe = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("Editor de Texto");
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -868,11 +876,10 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblRenglon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblR, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
+                    .addComponent(lblR, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblC, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lblColumna, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lblColumna, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblRenglon, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -1034,6 +1041,7 @@ public class Principal extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void mnuSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuSalirActionPerformed

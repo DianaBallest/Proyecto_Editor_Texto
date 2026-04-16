@@ -36,12 +36,18 @@ public class FrmConfiguration extends javax.swing.JFrame {
                 btnAceptar.setText("Aceptar");
                 btnCancelar.setText("Cancelar");
                 
+                // --- AQUÍ CAMBIAMOS EL TÍTULO A ESPAÑOL ---
+                this.setTitle("Configuración");
+                
             } else if ("EN".equals(idioma)) {
                 miComponente.radioIngles.setSelected(true);
                 miComponente.IdiomaENG();
                 
                 btnAceptar.setText("Accept"); // o puedes usar "OK"
                 btnCancelar.setText("Cancel");
+                
+                // --- AQUÍ CAMBIAMOS EL TÍTULO A INGLÉS ---
+                this.setTitle("Configuration");
             }
         }
     }
@@ -61,6 +67,7 @@ public class FrmConfiguration extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Configuración");
+        setResizable(false);
 
         btnAceptar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnAceptar.setForeground(new java.awt.Color(0, 0, 102));
@@ -108,6 +115,7 @@ public class FrmConfiguration extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     // --Configuracion de Boton Aceptar
