@@ -60,6 +60,7 @@ public class FrmConfiguration extends javax.swing.JFrame {
         miComponente = new componenteconfi.Configuracion();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Configuración");
 
         btnAceptar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnAceptar.setForeground(new java.awt.Color(0, 0, 102));

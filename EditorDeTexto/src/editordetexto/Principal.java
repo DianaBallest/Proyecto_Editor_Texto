@@ -37,6 +37,22 @@ public class Principal extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         
+        
+        // --- ESTE ES EL TRUCO PARA FORZAR TU COLOR AZUL ---
+        barraMenu.setUI(new javax.swing.plaf.basic.BasicMenuBarUI());
+        
+        // --- TRUCO PARTE 2: Obligar a las letras a ser blancas y NEGRITAS ---
+        for (int i = 0; i < barraMenu.getMenuCount(); i++) {
+            javax.swing.JMenu menu = barraMenu.getMenu(i);
+            if (menu != null) {
+                menu.setForeground(java.awt.Color.WHITE); // Pintamos la letra de blanco
+                
+                // --- AQUÍ ESTÁ LA MAGIA PARA LAS NEGRITAS ---
+                menu.setFont(menu.getFont().deriveFont(java.awt.Font.BOLD)); 
+            }
+        }
+        
+        
         aplicarTraduccion();
     }
     
@@ -114,7 +130,7 @@ public class Principal extends javax.swing.JFrame {
 
         switch (clave) {
             case "FiltroTxt":
-                return enIngles ? "Text Files (*.txt)" : "Archivos de texto (*.txt)";
+                return enIngles ? "Archivos ISCDAV (*.iscdav)" : "Archivos ISCDAV (*.iscdav)";
             case "ErrorCrear":
                 return enIngles ? "Error creating file" : "Error al crear archivo";
             case "GuardadoOk":
@@ -231,10 +247,10 @@ public class Principal extends javax.swing.JFrame {
     private void nuevo(){
        JFileChooser file=new JFileChooser();
 
-       file.setCurrentDirectory(new File(System.getProperty("user.home") + "/Documents"));
+       file.setCurrentDirectory(obtenerRutaTrabajo());
 
        // --- USAMOS EL MÉTODO DE TRADUCCIÓN PARA EL FILTRO ---
-        FileNameExtensionFilter filtro = new FileNameExtensionFilter(obtenerMensaje("FiltroTxt"), "txt");
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter(obtenerMensaje("FiltroTxt"), "iscdav");
         file.setFileFilter(filtro);
 
        int seleccion=file.showSaveDialog(this);
@@ -242,8 +258,8 @@ public class Principal extends javax.swing.JFrame {
         if (seleccion==JFileChooser.APPROVE_OPTION) {
             File archivo=file.getSelectedFile();
 
-            if (!archivo.getName().endsWith(".txt")) {
-                archivo=new File(archivo.getAbsolutePath() + ".txt");
+            if (!archivo.getName().endsWith(".iscdav")) {
+                archivo=new File(archivo.getAbsolutePath() + ".iscdav");
             }
 
             try {
@@ -315,11 +331,10 @@ public class Principal extends javax.swing.JFrame {
 }
     private void abrir() {
     JFileChooser opc = new JFileChooser();
-    File ruta = new File(System.getProperty("user.home") + "/Documents");
-    opc.setCurrentDirectory(ruta);
+    opc.setCurrentDirectory(obtenerRutaTrabajo());
     
     // --- 1. TRADUCCIÓN: El texto del filtro ---
-    FileNameExtensionFilter filtro = new FileNameExtensionFilter(obtenerMensaje("FiltroTxt"), "txt");
+    FileNameExtensionFilter filtro = new FileNameExtensionFilter(obtenerMensaje("FiltroTxt"), "iscdav");
     opc.setFileFilter(filtro);
     
     int seleccion = opc.showOpenDialog(this);
@@ -418,12 +433,10 @@ public class Principal extends javax.swing.JFrame {
         
         JFileChooser elejir=new JFileChooser();
         
-        //ruta por defecto
-        File ruta=new File(System.getProperty("user.home")+"/Documents");
-        elejir.setCurrentDirectory(ruta);
+        elejir.setCurrentDirectory(obtenerRutaTrabajo());
         
         // --- TRADUCCIÓN DEL FILTRO ---
-        FileNameExtensionFilter filtro = new FileNameExtensionFilter(obtenerMensaje("FiltroTxt"), "txt");
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter(obtenerMensaje("FiltroTxt"), "iscdav");
         elejir.setFileFilter(filtro);
           
         int seleccion=elejir.showSaveDialog(this);
@@ -432,8 +445,8 @@ public class Principal extends javax.swing.JFrame {
             File archivo=elejir.getSelectedFile();
             
             //asegurar extensión
-            if(!archivo.getName().endsWith(".txt")){
-                archivo=new File(archivo.getAbsolutePath()+".txt");
+            if(!archivo.getName().endsWith(".iscdav")){
+                archivo=new File(archivo.getAbsolutePath()+".iscdav");
             }
             try{
                 FileWriter escrito=new FileWriter(archivo);
@@ -1143,12 +1156,14 @@ public class Principal extends javax.swing.JFrame {
         }
         //</editor-fold>
 
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Principal().setVisible(true);
             }
         });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1187,6 +1202,33 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JToolBar toolBar;
     // End of variables declaration//GEN-END:variables
 
+    private java.io.File obtenerRutaTrabajo() {
+        // Ruta de rescate por defecto
+        java.io.File rutaPorDefecto = new java.io.File(System.getProperty("user.home") + "/Documents");
+        
+        try {
+            mis_propiedades.ClassArchivoPropiedades manejador = new mis_propiedades.ClassArchivoPropiedades();
+            java.util.Properties propiedades = manejador.LeerPropiedades();
+
+            if (propiedades != null) {
+                // Usamos la clave exacta que descubrimos en tu FrmConfiguration
+                String rutaGuardada = propiedades.getProperty("RutaTrabajo"); 
+                
+                if (rutaGuardada != null && !rutaGuardada.trim().isEmpty()) {
+                    java.io.File directorio = new java.io.File(rutaGuardada);
+                    if (directorio.exists() && directorio.isDirectory()) {
+                        return directorio; 
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Si algo falla, el programa sigue funcionando y usa la ruta por defecto
+        }
+        
+        return rutaPorDefecto;
+    }
+    
+    
     // AQUÍ PEGAS EL MÉTODO QUE ME ACABAS DE MANDAR 
     private void actualizarEstadoPestana(javax.swing.JTextArea area, boolean modificado) {
         int index = -1;
@@ -1200,7 +1242,7 @@ public class Principal extends javax.swing.JFrame {
 
         if (index != -1) {
         java.io.File archivo = (java.io.File) area.getClientProperty("archivo");
-        String nombreArchivo = (archivo != null) ? archivo.getName() : "Documento Nuevo.txt";
+        String nombreArchivo = (archivo != null) ? archivo.getName() : "Documento Nuevo.iscdav";
 
         // Creamos una etiqueta nativa para tener control total del diseño
         javax.swing.JLabel etiquetaPestana = new javax.swing.JLabel(nombreArchivo);
