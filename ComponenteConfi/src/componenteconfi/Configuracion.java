@@ -341,20 +341,20 @@ public class Configuracion extends javax.swing.JPanel {
         lblMuestra.repaint();
     }
     
-    // -- Método para obtener la fuente armada desde las listas
+    // Método para obtener la fuente armada desde las listas
     public java.awt.Font getFuenteSeleccionada() {
         String nombre = lstFuente.getSelectedValue();
-        int estilo = lstEstilo.getSelectedIndex(); // 0=Normal, 1=Negrita, 2=Cursiva
+        int estilo = lstEstilo.getSelectedIndex();
         int tamano = Integer.parseInt(comboTamano.getSelectedItem().toString());
         return new java.awt.Font(nombre, estilo, tamano);
     }
 
-    // --Método para saber qué idioma está marcado
+    // Método para saber qué idioma está marcado
     public String getIdiomaSeleccionado() {
         return radioEspanol.isSelected() ? "ES" : "EN";
     }
 
-    // --Método para obtener la ruta del cuadro de texto
+    //Método para obtener la ruta del cuadro de texto
     public String getRutaTrabajo() {
         return txtRuta.getText();
     }

@@ -14,7 +14,7 @@ public class FrmConfiguration extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         
-        // --Pedimos que el componente lea el archivo usando libreria creada
+        // Pedimos que el componente lea el archivo usando libreria creada
         java.util.Properties propiedadess = miComponente.LeerPropiedades();
         if (propiedadess != null && !propiedadess.isEmpty()) {
             String fuente = propiedadess.getProperty("Fuente");
@@ -36,17 +36,17 @@ public class FrmConfiguration extends javax.swing.JFrame {
                 btnAceptar.setText("Aceptar");
                 btnCancelar.setText("Cancelar");
                 
-                // --- AQUÍ CAMBIAMOS EL TÍTULO A ESPAÑOL ---
+                // Traduccion de Titulo a español
                 this.setTitle("Configuración");
                 
             } else if ("EN".equals(idioma)) {
                 miComponente.radioIngles.setSelected(true);
                 miComponente.IdiomaENG();
                 
-                btnAceptar.setText("Accept"); // o puedes usar "OK"
+                btnAceptar.setText("Accept");
                 btnCancelar.setText("Cancel");
                 
-                // --- AQUÍ CAMBIAMOS EL TÍTULO A INGLÉS ---
+                // Traduccion de Titulo a ingles
                 this.setTitle("Configuration");
             }
         }
@@ -118,29 +118,27 @@ public class FrmConfiguration extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    // --Configuracion de Boton Aceptar
+    //Configuracion de Botón Aceptar
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-        // 1. Creamos el contenedor de propiedades
+        //Creacion del contenedor de propiedades
         java.util.Properties propiedades = new java.util.Properties();
 
-        // 2. Llenamos el contenedor con lo que hay en el componente actualmente
+        //Llenamos el contenedor con lo que hay en el componente actualmente
         propiedades.setProperty("Fuente", miComponente.getFuenteSeleccionada().getFamily());
         propiedades.setProperty("Estilo", String.valueOf(miComponente.getFuenteSeleccionada().getStyle()));
         propiedades.setProperty("Tamano", String.valueOf(miComponente.getFuenteSeleccionada().getSize()));
         propiedades.setProperty("Idioma", miComponente.getIdiomaSeleccionado());
         propiedades.setProperty("RutaTrabajo", miComponente.getRutaTrabajo()); 
     
-        // 3. Guardamos usando el método de tu componente (que usa tu librería)
+        // Guardar usando el método del componente (que usa tu librería)
         miComponente.EscribirPropiedades(propiedades);
 
-        // 4. Mostramos el mensaje de éxito según el idioma elegido (Parte 7)
         if (miComponente.getIdiomaSeleccionado().equals("ES")) {
             javax.swing.JOptionPane.showMessageDialog(this, "Las configuraciones se aplicarán la próxima vez que inicie la aplicación.");
         } else {
             javax.swing.JOptionPane.showMessageDialog(this, "The settings will be applied the next time the application starts.");
         }
 
-        // 5. Cerramos la ventana
         this.dispose();
     }//GEN-LAST:event_btnAceptarActionPerformed
 

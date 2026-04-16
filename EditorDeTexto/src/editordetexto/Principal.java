@@ -38,16 +38,16 @@ public class Principal extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         
         
-        // --- ESTE ES EL TRUCO PARA FORZAR TU COLOR AZUL ---
+        // forzar color azul de barMenu
         barraMenu.setUI(new javax.swing.plaf.basic.BasicMenuBarUI());
         
-        // --- TRUCO PARTE 2: Obligar a las letras a ser blancas y NEGRITAS ---
+        // Obligar a las letras a ser blancas y NEGRITAS
         for (int i = 0; i < barraMenu.getMenuCount(); i++) {
             javax.swing.JMenu menu = barraMenu.getMenu(i);
             if (menu != null) {
-                menu.setForeground(java.awt.Color.WHITE); // Pintamos la letra de blanco
+                menu.setForeground(java.awt.Color.WHITE); // letras de blanco
                 
-                // --- AQUÍ ESTÁ LA MAGIA PARA LAS NEGRITAS ---
+                //letras en negritas
                 menu.setFont(menu.getFont().deriveFont(java.awt.Font.BOLD)); 
             }
         }
@@ -57,23 +57,22 @@ public class Principal extends javax.swing.JFrame {
     }
     
     public void aplicarTraduccion() {
-    // 1. Cargamos las listas de palabras
+    //Cargamos las listas de palabras
     cargarIdiomas();
 
-    // 2. Usamos TU librería para leer el archivo config.properties
+    // Usamos librería para leer el archivo config.properties
     mis_propiedades.ClassArchivoPropiedades manejador = new mis_propiedades.ClassArchivoPropiedades();
     java.util.Properties propiedades = manejador.LeerPropiedades();
 
     if (propiedades != null) {
-        // --- 1. LÓGICA DE FUENTE (Parte 8) ---
         String tipo = propiedades.getProperty("Fuente", "Arial");
         int estilo = Integer.parseInt(propiedades.getProperty("Estilo", "0"));
         int tamano = Integer.parseInt(propiedades.getProperty("Tamano", "12"));
         
-        // Guardamos la fuente en nuestra variable global
+        //Guardamos la fuente en nuestra variable global
         this.fuenteConfigurada = new java.awt.Font(tipo, estilo, tamano);
   
-        // Obtenemos el idioma (EN o ES)
+        //Obtenemos el idioma (EN o ES)
         String idiomaConfigurado = propiedades.getProperty("Idioma", "ES");
         java.util.ArrayList<String> opcionesIdioma = idiomas.get(idiomaConfigurado);
 
@@ -81,8 +80,8 @@ public class Principal extends javax.swing.JFrame {
         javax.swing.JMenu menu;
         javax.swing.JMenuItem opcionMenu;
 
-        // --- EL CICLO DEL PROFE ---
-        // Recorremos la barra de menú (barraMenu es el nombre de tu JMenuBar)
+        //CICLO DEL PROFE
+        // Recorremos la barra de menú 
         for (int nMenu = 0; nMenu < barraMenu.getComponentCount(); nMenu++) {
             menu = barraMenu.getMenu(nMenu);
             
@@ -107,32 +106,31 @@ public class Principal extends javax.swing.JFrame {
             java.awt.Component comp = toolBar.getComponentAtIndex(i);
         
             if (comp instanceof javax.swing.JButton) {
-                posicion++; // Seguimos contando desde donde se quedó el menú
+                posicion++;
                 ((javax.swing.JButton) comp).setToolTipText(opcionesIdioma.get(posicion));
             }
         }
         
-        // Traducción de etiquetas de estado
+        // Traducción de etiquetas RENGLÓN COLUMNA
         posicion++;
         lblRenglon.setText(opcionesIdioma.get(posicion));
         posicion++;
         lblColumna.setText(opcionesIdioma.get(posicion));
     }
-    // --- TRADUCCIÓN DEL TÍTULO DE LA VENTANA ---
+    //TRADUCCIÓN DEL TÍTULO DE LA VENTANA
         this.setTitle(obtenerMensaje("TituloApp"));
     
 }
-   // Este es el MÉTODO NUEVO que debes agregar en Principal.java
+   //Metodo para traducir mensajes
     private String obtenerMensaje(String clave) {
         // Verificamos en qué idioma está el primer menú
         boolean enIngles = false;
         if (barraMenu.getMenuCount() > 0 && barraMenu.getMenu(0).getText().equals("File")) {
             enIngles = true;
         }
-
         switch (clave) {
             case "FiltroTxt":
-                return enIngles ? "Archivos ISCDAV (*.iscdav)" : "Archivos ISCDAV (*.iscdav)";
+                return enIngles ? "Files ISCDAV (*.iscdav)" : "Archivos ISCDAV (*.iscdav)";
             case "ErrorCrear":
                 return enIngles ? "Error creating file" : "Error al crear archivo";
             case "GuardadoOk":
@@ -193,7 +191,7 @@ public class Principal extends javax.swing.JFrame {
         espanol.add("Acerca De");         // Menú Principal 4
         
         
-        // --AQUÍ AGREGA LOS TOOLTIPS:
+        //TOOLTIPS EN ESPAÑOL:
         espanol.add("Nuevo");        
         espanol.add("Abrir");        
         espanol.add("Guardar");      
@@ -202,7 +200,7 @@ public class Principal extends javax.swing.JFrame {
         espanol.add("Cortar");       
         espanol.add("Pegar");   
         
-        // --- ETIQUETAS INFERIORES ---
+        //ETIQUETAS INFERIORES
         espanol.add("Renglón: ");
         espanol.add("Columna: ");
         
@@ -230,7 +228,7 @@ public class Principal extends javax.swing.JFrame {
     
         ingles.add("About");
         
-        // --AQUÍ AGREGA LOS TOOLTIPS EN INGLÉS:
+        //TOOLTIPS EN INGLÉS:
         ingles.add("New");           
         ingles.add("Open");          
         ingles.add("Save");          
@@ -239,7 +237,7 @@ public class Principal extends javax.swing.JFrame {
         ingles.add("Cut");           
         ingles.add("Paste");
         
-        // --- ETIQUETAS INFERIORES ---
+        //ETIQUETAS INFERIORES
         ingles.add("Line: ");
         ingles.add("Column: ");
         
@@ -253,8 +251,7 @@ public class Principal extends javax.swing.JFrame {
 
        file.setCurrentDirectory(obtenerRutaTrabajo());
 
-       // --- USAMOS EL MÉTODO DE TRADUCCIÓN PARA EL FILTRO ---
-        FileNameExtensionFilter filtro = new FileNameExtensionFilter(obtenerMensaje("FiltroTxt"), "iscdav");
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter(obtenerMensaje("FiltroTxt"), "iscdav");//USAMOS EL MÉTODO DE TRADUCCIÓN
         file.setFileFilter(filtro);
 
        int seleccion=file.showSaveDialog(this);
@@ -278,13 +275,12 @@ public class Principal extends javax.swing.JFrame {
 
                 area.putClientProperty("archivo", archivo);
                 
-                // --- AQUÍ PRENDEMOS EL SEMÁFORO VERDE ---
+                // Indicador verde - prendemos
                 area.putClientProperty("contenidoOriginal", ""); // El archivo empieza vacío
                 area.putClientProperty("modificado", false);     // No está modificado
                 actualizarEstadoPestana(area, false);            // Ponemos el circulito verde
 
             } catch (IOException e) {
-                // --- USAMOS EL MÉTODO DE TRADUCCIÓN PARA EL ERROR ---
                 JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorCrear"));
             }
         }
@@ -302,8 +298,6 @@ public class Principal extends javax.swing.JFrame {
     JTextArea area = (JTextArea) scroll.getViewport().getView();
     File archivo = (File) area.getClientProperty("archivo");
 
-    // --- LÓGICA CRUCIAL: Si es un documento "Nuevo", no tiene ruta.
-    // Lo mandamos al método guardarComo para que el usuario elija dónde guardarlo.
     if (archivo == null) {
         guardarComo(area);
         return;
@@ -317,19 +311,13 @@ public class Principal extends javax.swing.JFrame {
         // actualizar estado
         area.putClientProperty("modificado", false);
         area.putClientProperty("contenidoOriginal", area.getText());
-
-        // quitar *
-        String titulo = panelNuevo.getTitleAt(index);
-        panelNuevo.setTitleAt(index, titulo.replace("*", ""));
         
-        // --- AQUÍ CAMBIAMOS A VERDE (Sustituye tu viejo código de quitar asteriscos) ---
+        // indicador a verde
         actualizarEstadoPestana(area, false);
 
-        // --- 2. TRADUCCIÓN: Mensaje de éxito ---
         JOptionPane.showMessageDialog(this, obtenerMensaje("GuardadoOk"));
 
     } catch (IOException e) {
-        // --- 3. TRADUCCIÓN: Mensaje de error ---
         JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorGuardar"));
     }
 }
@@ -337,7 +325,6 @@ public class Principal extends javax.swing.JFrame {
     JFileChooser opc = new JFileChooser();
     opc.setCurrentDirectory(obtenerRutaTrabajo());
     
-    // --- 1. TRADUCCIÓN: El texto del filtro ---
     FileNameExtensionFilter filtro = new FileNameExtensionFilter(obtenerMensaje("FiltroTxt"), "iscdav");
     opc.setFileFilter(filtro);
     
@@ -346,7 +333,7 @@ public class Principal extends javax.swing.JFrame {
     if (seleccion == JFileChooser.APPROVE_OPTION) {
         File archivo = opc.getSelectedFile();
     
-        // evitar abrir el mismo archivo dos veces
+        // evita abrir el mismo archivo dos veces
         for (int i = 0; i < panelNuevo.getTabCount(); i++) {
             JScrollPane d = (JScrollPane) panelNuevo.getComponentAt(i);
             JTextArea a = (JTextArea) d.getViewport().getView();
@@ -372,11 +359,10 @@ public class Principal extends javax.swing.JFrame {
             area.putClientProperty("contenidoOriginal", contenido);
             area.putClientProperty("modificado", false);
             
-            // --- AQUÍ CONECTAMOS EL INDICADOR VERDE ---
+            //Coneccion de indicador verde
             actualizarEstadoPestana(area, false);
         
         } catch (IOException e) {
-            // --- 2. TRADUCCIÓN: Mensaje de error ---
             JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorAbrir"));
         }
     }
@@ -391,21 +377,18 @@ public class Principal extends javax.swing.JFrame {
     JScrollPane scroll = (JScrollPane) panelNuevo.getComponentAt(indicador);
     JTextArea area = (JTextArea) scroll.getViewport().getView();
 
-    //comparar contenido en lugar de usar "modificado"
     String original = (String) area.getClientProperty("contenidoOriginal");
     String actual = area.getText();
 
     boolean modificado = (original == null || !original.equals(actual));
 
     if (modificado) {
-
         int opcion = JOptionPane.showConfirmDialog(
                 this,
                 obtenerMensaje("PreguntaGuardar"),
                 obtenerMensaje("TituloCerrar"),
                 JOptionPane.YES_NO_CANCEL_OPTION
         );
-
         if (opcion == JOptionPane.CANCEL_OPTION) return;
 
         if (opcion == JOptionPane.YES_OPTION) {
@@ -425,8 +408,8 @@ public class Principal extends javax.swing.JFrame {
         if (modificado) {
             int op = JOptionPane.showConfirmDialog(
                 this, 
-                obtenerMensaje("CambiosSinGuardar"), // <-- TRADUCCIÓN
-                obtenerMensaje("TituloGuardarComo"), // <-- TRADUCCIÓN
+                obtenerMensaje("CambiosSinGuardar"),
+                obtenerMensaje("TituloGuardarComo"),
                 JOptionPane.YES_NO_CANCEL_OPTION
             );
         
@@ -440,7 +423,6 @@ public class Principal extends javax.swing.JFrame {
         
         elejir.setCurrentDirectory(obtenerRutaTrabajo());
         
-        // --- TRADUCCIÓN DEL FILTRO ---
         FileNameExtensionFilter filtro = new FileNameExtensionFilter(obtenerMensaje("FiltroTxt"), "iscdav");
         elejir.setFileFilter(filtro);
           
@@ -449,7 +431,6 @@ public class Principal extends javax.swing.JFrame {
         if(seleccion==JFileChooser.APPROVE_OPTION){
             File archivo=elejir.getSelectedFile();
             
-            //asegurar extensión
             if(!archivo.getName().endsWith(".iscdav")){
                 archivo=new File(archivo.getAbsolutePath()+".iscdav");
             }
@@ -458,7 +439,7 @@ public class Principal extends javax.swing.JFrame {
                 escrito.write(area.getText());
                 escrito.close();
                 
-                // Guardar referencias y actualizar estado
+                // Guarda referencias y actualiza estado
                 area.putClientProperty("archivo", archivo);
                 area.putClientProperty("contenidoOriginal", area.getText());
                 area.putClientProperty("modificado", false);
@@ -467,11 +448,9 @@ public class Principal extends javax.swing.JFrame {
                 int indicador=panelNuevo.getSelectedIndex();
                 panelNuevo.setTitleAt(indicador, archivo.getName());
                 
-                // --- MENSAJE DE ÉXITO TRADUCIDO ---
                 JOptionPane.showMessageDialog(this, obtenerMensaje("GuardadoOk"));
                 
             }catch(IOException e){
-                // --- MENSAJE DE ERROR TRADUCIDO ---
                 JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorGuardar"));
             }
         }
@@ -479,7 +458,6 @@ public class Principal extends javax.swing.JFrame {
     
     private void guardarTodo(){
         if (panelNuevo.getTabCount()==0){
-            // --- 1. TRADUCCIÓN: No hay documentos ---
             JOptionPane.showMessageDialog(this, obtenerMensaje("SinDocumentos"));
             return;
         }
@@ -507,18 +485,16 @@ public class Principal extends javax.swing.JFrame {
                         area.putClientProperty("contenidoOriginal", area.getText());
                         area.putClientProperty("modificado", false);
                         
-                        // --- ACTUALIZAMOS CADA PESTAÑA A VERDE ---
+                        // actualización de cada pestaña a verde
                         actualizarEstadoPestana(area, false);
                         
       
                     }catch(IOException e){
-                        // --- 2. TRADUCCIÓN: Error al guardar (Ya teníamos esta clave) ---
                         JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorGuardar"));
                     }
                 }
             }
         }
-        // --- 3. TRADUCCIÓN: Éxito total ---
         JOptionPane.showMessageDialog(this, obtenerMensaje("TodosGuardados"));
     }
     
@@ -545,7 +521,6 @@ public class Principal extends javax.swing.JFrame {
         int opc=JOptionPane.NO_OPTION;
         
         if(eCambios){
-            // --- TRADUCCIÓN APLICADA AQUÍ ---
             opc=JOptionPane.showConfirmDialog(this, obtenerMensaje("PreguntaGuardar"), obtenerMensaje("TituloCerrarTodo"), JOptionPane.YES_NO_CANCEL_OPTION);
             if(opc==JOptionPane.CANCEL_OPTION) return;
         }
@@ -571,7 +546,6 @@ public class Principal extends javax.swing.JFrame {
                             
                             area.putClientProperty("contenidoOriginal", area.getText());
                         } catch(IOException e){
-                            // --- TRADUCCIÓN APLICADA AQUÍ ---
                             JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorGuardar"));
                             return;
                         }
@@ -583,10 +557,8 @@ public class Principal extends javax.swing.JFrame {
     }
     
     private void salir() {
-        // 1. Mandamos llamar a tu método que cierra y pregunta
         cerrarTodo(); 
 
-        // 2. Si las pestañas llegaron a cero, es seguro apagar el programa
         if (panelNuevo.getTabCount() == 0) {
             System.exit(0); 
         }
@@ -655,7 +627,7 @@ public class Principal extends javax.swing.JFrame {
             Boolean mod = (Boolean) area.getClientProperty("modificado");
             if (mod == null || !mod) {
                 area.putClientProperty("modificado", true);
-                actualizarEstadoPestana(area, true); // <--- CAMBIA A ROJO Y NEGRITA
+                actualizarEstadoPestana(area, true); //cambia el titulo a negritas y el indicador a rojo
             }
         }
     });
@@ -1215,7 +1187,7 @@ public class Principal extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private java.io.File obtenerRutaTrabajo() {
-        // Ruta de rescate por defecto
+        // Ruta por defecto
         java.io.File rutaPorDefecto = new java.io.File(System.getProperty("user.home") + "/Documents");
         
         try {
@@ -1223,7 +1195,6 @@ public class Principal extends javax.swing.JFrame {
             java.util.Properties propiedades = manejador.LeerPropiedades();
 
             if (propiedades != null) {
-                // Usamos la clave exacta que descubrimos en tu FrmConfiguration
                 String rutaGuardada = propiedades.getProperty("RutaTrabajo"); 
                 
                 if (rutaGuardada != null && !rutaGuardada.trim().isEmpty()) {
@@ -1234,14 +1205,11 @@ public class Principal extends javax.swing.JFrame {
                 }
             }
         } catch (Exception e) {
-            // Si algo falla, el programa sigue funcionando y usa la ruta por defecto
         }
         
         return rutaPorDefecto;
     }
     
-    
-    // AQUÍ PEGAS EL MÉTODO QUE ME ACABAS DE MANDAR 
     private void actualizarEstadoPestana(javax.swing.JTextArea area, boolean modificado) {
         int index = -1;
         for (int i = 0; i < panelNuevo.getTabCount(); i++) {
@@ -1256,22 +1224,21 @@ public class Principal extends javax.swing.JFrame {
         java.io.File archivo = (java.io.File) area.getClientProperty("archivo");
         String nombreArchivo = (archivo != null) ? archivo.getName() : "Documento Nuevo.iscdav";
 
-        // Creamos una etiqueta nativa para tener control total del diseño
+        // Creamos una etiqueta para tener control del diseño
         javax.swing.JLabel etiquetaPestana = new javax.swing.JLabel(nombreArchivo);
 
         if (modificado) {
-            // Ponemos fuente en negrita e Icono ROJO
+            // fuente en negrita e icono en rojo
             etiquetaPestana.setFont(new java.awt.Font("Tahoma", java.awt.Font.BOLD, 12));
             etiquetaPestana.setIcon(new IconoEstado(java.awt.Color.RED));
         } else {
-            // Ponemos fuente normal e Icono VERDE
+           // fuente en negrita e icono en verde
             etiquetaPestana.setFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 12));
             etiquetaPestana.setIcon(new IconoEstado(java.awt.Color.GREEN));
         }
         
-        // Colocamos nuestra etiqueta personalizada en la pestaña
         panelNuevo.setTabComponentAt(index, etiquetaPestana);
-    }
+        }
     }
 
     
