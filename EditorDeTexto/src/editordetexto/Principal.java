@@ -504,53 +504,61 @@ public class Principal extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, obtenerMensaje("TodosGuardados"));
     }
     
-    private void cerrarTodo() {
-        // si no hay pestañas abiertas
-        if (panelNuevo.getTabCount() == 0) {
-            return;
+ 
+    private void cerrarTodo(){
+        int total = panelNuevo.getTabCount();
+        if (total==0) return;
+        boolean eCambios=false;
+        
+        for(int i=0; i<total; i++){
+            JScrollPane scroll =(JScrollPane) panelNuevo.getComponentAt(i);
+            JTextArea area =(JTextArea) scroll.getViewport().getView();
+            
+            String original=(String) area.getClientProperty("contenidoOriginal");
+            String actual=area.getText();
+            
+            boolean modificado=(original==null ||!original.equals(actual));
+            
+            if(modificado){
+                eCambios=true;
+                break;
+            }
         }
-        for (int i = panelNuevo.getTabCount() - 1; i >= 0; i--) {
-            JScrollPane deslizar = (JScrollPane) panelNuevo.getComponentAt(i);
-            JTextArea area = (JTextArea) deslizar.getViewport().getView();
-            String original = (String) area.getClientProperty("ContenidoOriginal");
-            String actual = area.getText();
+        int opc=JOptionPane.NO_OPTION;
         
-            boolean modificado = (original == null || !original.equals(actual));
-        
-            if (modificado) {
-                panelNuevo.setSelectedIndex(i);
+        if(eCambios){
+            opc=JOptionPane.showConfirmDialog(this, "¿Deseas guardar los cambios antes de cerrar?", "Cerrar todo", JOptionPane.YES_NO_CANCEL_OPTION);
+            if(opc==JOptionPane.CANCEL_OPTION) return;
+        }
+        for(int i=total - 1;i>=0; i--){
+             JScrollPane scroll = (JScrollPane) panelNuevo.getComponentAt(i);
+            JTextArea area = (JTextArea) scroll.getViewport().getView();
             
-                // --- 1. TRADUCCIÓN: Pregunta y Título (Reciclamos "PreguntaGuardar") ---
-                int op = JOptionPane.showConfirmDialog(
-                    this, 
-                    obtenerMensaje("PreguntaGuardar"), 
-                    obtenerMensaje("TituloCerrarTodo"), 
-                    JOptionPane.YES_NO_CANCEL_OPTION
-                );
-            
-                if (op == JOptionPane.CANCEL_OPTION) return;
-            
-                if (op == JOptionPane.YES_OPTION) {
-                    File archivo = (File) area.getClientProperty("archivo");
-                    if (archivo == null) {
+            if(eCambios && opc==JOptionPane.YES_OPTION){
+                String original = (String) area.getClientProperty("contenidoOriginal");
+                String actual = area.getText();
+                
+                boolean mod=(original ==null ||!original.equals(actual));
+                if(mod){
+                    File archivo=(File) area.getClientProperty("archivo");
+                    if(archivo==null){
+                        panelNuevo.setSelectedIndex(i);
                         guardarComo(area);
-                    } else {
-                        try {
-                            FileWriter e = new FileWriter(archivo);
-                            e.write(area.getText());
-                            e.close();
-                        
-                         area.putClientProperty("ContenidoOriginal", area.getText());
-                        
-                        } catch (IOException e) {
-                            // --- 2. TRADUCCIÓN: Error (Reciclamos "ErrorGuardar") ---
-                            JOptionPane.showMessageDialog(this, obtenerMensaje("ErrorGuardar"));
+                    }else{
+                        try{
+                            FileWriter escrito = new FileWriter(archivo);
+                            escrito.write(area.getText());
+                            escrito.close();
+                            
+                            area.putClientProperty("contenidoOriginal", area.getText());
+                        } catch(IOException e){
+                            JOptionPane.showMessageDialog(this, "Error al guardar");
                             return;
                         }
                     }
                 }
             }
-            panelNuevo.removeTabAt(i); // cierra pestaña
+            panelNuevo.removeTabAt(i);
         }
     }
     
