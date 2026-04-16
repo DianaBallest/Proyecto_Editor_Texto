@@ -413,6 +413,7 @@ public class Principal extends javax.swing.JFrame {
         }
     }
     panelNuevo.removeTabAt(indicador);
+    mostrarRenglonColumna();
 }
     private void guardarComo(JTextArea area){
         //Verificar cambios sin guardar
@@ -601,8 +602,11 @@ public class Principal extends javax.swing.JFrame {
     
     private void mostrarRenglonColumna(){
     JTextArea area=obtenerAreaActual();
-    if(area==null)
+    if(area==null){
+        lblR.setText("");
+        lblC.setText("");
         return;
+    }
     try{
         int pos =area.getCaretPosition();
         int renglon=area.getLineOfOffset(pos)+1;
