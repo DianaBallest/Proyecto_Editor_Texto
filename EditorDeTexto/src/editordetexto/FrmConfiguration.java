@@ -65,7 +65,7 @@ public class FrmConfiguration extends javax.swing.JFrame {
         btnCancelar = new javax.swing.JButton();
         miComponente = new componenteconfi.Configuracion();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Configuración");
         setResizable(false);
 
